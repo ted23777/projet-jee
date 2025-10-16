@@ -50,7 +50,7 @@ public class ModelConnexion {
 	
 	public String connect() {
 	    
-	    DtoCompte dto = serviceConnexion.sessionUtilisateurOuvrir( courant.getPseudo(), courant.getMotDePasse() );
+	    DtoCompte dto = serviceConnexion.sessionUtilisateurOuvrir( courant.getAdresseMail(), courant.getMotDePasse() );
 	    
 	    if ( dto != null ){
 	    	
@@ -64,11 +64,11 @@ public class ModelConnexion {
 	        mapper.update(compteActif, mapper.map(dto) );
 	        
 	    	modelInfo.setTitre( "Bienvenue" );
-	    	modelInfo.setTexte( "Vous êtes connecté en tant que '" + compteActif.getPseudo() +"'.");
+	    	modelInfo.setTexte( "Vous êtes connecté en tant que '" + compteActif.getNom() +"'.");
 		    return "info";
 
 	    } else {
-	        UtilJsf.messageError( "Pseudo ou mot de passe invalide." );
+	        UtilJsf.messageError( "email ou mot de passe invalide." );
 	    	return null;
 	    }
 	}	

@@ -12,13 +12,17 @@ public class DtoCompte implements Serializable  {
 	
 	private int			id;
 	
-	private String		pseudo;
+	private String		nom;
+	
+	private String		prenom;
 	
 	private String		motDePasse;
 	
-	private String		email;
+	private String		adresseMail;
 
-	private boolean		flagAdmin;
+	private boolean		admin;
+	
+	private Double 		solde;
 	
 	//-------
 	// Getters & setters
@@ -32,12 +36,28 @@ public class DtoCompte implements Serializable  {
 		this.id = id;
 	}
 
-	public String getPseudo() {
-		return pseudo;
+	public String getNom() {
+		return nom;
 	}
 
-	public void setPseudo(String pseudo) {
-		this.pseudo = pseudo;
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	public Double getSolde() {
+		return solde;
+	}
+
+	public void setSolde(Double solde) {
+		this.solde = solde;
 	}
 
 	public String getMotDePasse() {
@@ -48,19 +68,19 @@ public class DtoCompte implements Serializable  {
 		this.motDePasse = motDePasse;
 	}
 	
-	public String getEmail() {
-		return email;
+	public String getAdresseMail() {
+		return adresseMail;
 	}
-	
-	public void setEmail(String email) {
-		this.email = email;
+
+	public void setAdresseMail(String adresseMail) {
+		this.adresseMail = adresseMail;
 	}
-	
-	public boolean isFlagAdmin() {
-		return flagAdmin;
+
+	public boolean isAdmin() {
+		return admin;
 	}
-	
-	public void setFlagAdmin(boolean flagAdmin) {
-		this.flagAdmin = flagAdmin;
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 }

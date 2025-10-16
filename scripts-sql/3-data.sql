@@ -2,21 +2,21 @@ SET search_path TO projet;
 
 
 -- Supprime toutes les données
-DELETE FROM utilisateur;
+DELETE FROM compte;
 
 
 -- Insère les données
 
--- Insertion dans la table utilisateur
-INSERT INTO utilisateur(nom, prenom, adresseMail, motDePasse, solde, admin)
+-- Insertion dans la table compte
+INSERT INTO compte(nom, prenom, adresseMail, motDePasse, solde, admin)
 VALUES
-('Dupont', 'Jean', 'jean.dupont@example.com', 'motdepasse123', 1000.00, true),
+('Dupont', 'Jean', 'jean@3il.com', 'mdp123', 1000.00, true),
 ('Durand', 'Marie', 'marie.durand@example.com', 'password456', 500.00, false),
 ('Martin', 'Pierre', 'pierre.martin@example.com', '1234motdepasse', 1500.50, false),
 ('Lemoine', 'Lucie', 'lucie.lemoine@example.com', 'securepassword789', 200.75, true);
 
 -- Insertion dans la table parcelle
-INSERT INTO parcelle(surface, libre, idUtilisateur)
+INSERT INTO parcelle(surface, libre, idCompte)
 VALUES
 (150.5, true, 1),
 (120.0, false, 2),
@@ -24,7 +24,7 @@ VALUES
 (180.75, false, 4);
 
 -- Insertion dans la table mouvement
-INSERT INTO mouvement(date_, libellé, montant, idUtilisateur)
+INSERT INTO mouvement(date_, libellé, montant, idCompte)
 VALUES
 ('2025-10-01', 'Achat de semences', 250.00, 1),
 ('2025-10-02', 'Entretien parcelle', 100.50, 2),

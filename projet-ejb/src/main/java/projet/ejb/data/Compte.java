@@ -22,17 +22,23 @@ public class Compte  {
 	@Column( name = "idcompte")
 	private int			id;
 	
-	@Column( name = "pseudo")
-	private String		pseudo;
+	@Column( name = "nom")
+	private String		nom;
+	
+	@Column( name = "prenom")
+	private String		prenom;
 	
 	@Column( name = "motdepasse")
 	private String		motDePasse;
 	
-	@Column( name = "email")
-	private String		email;
+	@Column( name = "adressemail")
+	private String		adresseMail;
 	
-	@Column( name = "flagadmin" )
-	private boolean		flagAdmin;
+	@Column(name = "solde") 
+    private Double solde;
+	
+	@Column( name = "admin" )
+	private boolean		admin;
 		
 	//-------
 	// Getters & setters
@@ -46,12 +52,28 @@ public class Compte  {
 		this.id = id;
 	}
 
-	public String getPseudo() {
-		return pseudo;
+	public String getNom() {
+		return nom;
 	}
 
-	public void setPseudo(String pseudo) {
-		this.pseudo = pseudo;
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	public Double getSolde() {
+		return solde;
+	}
+
+	public void setSolde(Double solde) {
+		this.solde = solde;
 	}
 
 	public String getMotDePasse() {
@@ -62,22 +84,22 @@ public class Compte  {
 		this.motDePasse = motDePasse;
 	}
 	
-	public String getEmail() {
-		return email;
+	public String getAdresseMail() {
+		return adresseMail;
+	}
+
+	public void setAdresseMail(String adresseMail) {
+		this.adresseMail = adresseMail;
+	}
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 	
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public boolean isFlagAdmin() {
-		return flagAdmin;
-	}
-
-	public void setFlagAdmin(boolean flagAdmin) {
-		this.flagAdmin = flagAdmin;
-	}
-
 	//-------
 	// equals() et hashcode()
 	//-------

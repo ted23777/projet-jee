@@ -11,11 +11,11 @@ import projet.jsf.data.Compte;
 public class CompteActif extends Compte {
 	
 	public boolean isLoggedIn() {
-		return getPseudo() != null;
+		return getAdresseMail() != null;
 	}	
 	
 	public boolean isAdmin() {
-		return isLoggedIn() && isFlagAdmin();
+		return (isLoggedIn() && isAdmin());
 	}
 
 	public String disconnect() {

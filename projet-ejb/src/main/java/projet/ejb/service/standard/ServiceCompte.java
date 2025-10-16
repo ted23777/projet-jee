@@ -76,14 +76,14 @@ public class ServiceCompte implements IServiceCompte {
 
 		StringBuilder message = new StringBuilder();
 
-		if (dtoCompte.getPseudo() == null || dtoCompte.getPseudo().isEmpty()) {
-			message.append("\nLe pseudo est absent.");
-		} else if (dtoCompte.getPseudo().length() < 3) {
-			message.append("\nLe pseudo est trop court.");
-		} else if (dtoCompte.getPseudo().length() > 25) {
-			message.append("\nLe pseudo est trop long.");
-		} else if (!daoCompte.verifierUnicitePseudo(dtoCompte.getPseudo(), dtoCompte.getId())) {
-			message.append("\nLe pseudo " + dtoCompte.getPseudo() + " est déjà utilisé.");
+		if (dtoCompte.getNom() == null || dtoCompte.getNom().isEmpty()) {
+			message.append("\nLe nom est absent.");
+		} else if (dtoCompte.getNom().length() < 3) {
+			message.append("\nLe nom est trop court.");
+		} else if (dtoCompte.getNom().length() > 25) {
+			message.append("\nLe nom est trop long.");
+		} else if (!daoCompte.verifierUniciteMail(dtoCompte.getAdresseMail(), dtoCompte.getId())) {
+			message.append("\nL'adresse mail  " + dtoCompte.getAdresseMail() + " est déjà utilisé.");
 		}
 
 		if (dtoCompte.getMotDePasse() == null || dtoCompte.getMotDePasse().isEmpty()) {
@@ -94,7 +94,7 @@ public class ServiceCompte implements IServiceCompte {
 			message.append("\nLe mot de passe est trop long.");
 		}
 
-		if (dtoCompte.getEmail() == null || dtoCompte.getEmail().isEmpty()) {
+		if (dtoCompte.getAdresseMail() == null || dtoCompte.getAdresseMail().isEmpty()) {
 			message.append("\nL'adresse e-mail est absente.");
 		}
 

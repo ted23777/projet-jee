@@ -16,10 +16,14 @@ public class Compte implements Serializable  {
 	
 	private Integer		id;
 	
-	@NotBlank( message = "Le pseudo doit être renseigné")
-	@Size(max=25, message = "Valeur trop longue pour le pseuo : 25 car. maxi" )
-	private String		pseudo;
+	@NotBlank( message = "Le nom doit être renseigné")
+	@Size(max=25, message = "Valeur trop longue pour le nom : 25 car. maxi" )
+	private String		nom;
 
+	@NotBlank( message = "Le prenom doit être renseigné")
+	@Size(max=25, message = "Valeur trop longue pour le prenom : 25 car. maxi" )
+	private String		prenom;
+	
 	@NotBlank( message = "Le mot de passe doit être renseigné")
 	@Size(max=25, message = "Valeur trop longue pour le mot de passe : 25 car. maxi" )
 	private String		motDePasse;
@@ -27,9 +31,14 @@ public class Compte implements Serializable  {
 	@NotBlank( message = "L'adresse e-mail doit être renseigné")
 	@Size(max=100, message = "Valeur trop longue pour l'adresse e-mail : 100 car. maxi" )
 	@Email( message = "Adresse e-mail invalide" )
-	private String		email;
+	private String		adresseMail;
 	
-	private boolean	flagAdmin;
+	@NotBlank( message = "Le solde doit être renseigné")
+	@Size(max=25, message = "Valeur trop longue pour le solde : 25 car. maxi" )
+	private Double solde;
+	
+	private boolean	admin;
+	
 
 	//-------
 	// Getters & setters
@@ -39,16 +48,32 @@ public class Compte implements Serializable  {
 		return id;
 	}
 	
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public String getPseudo() {
-		return pseudo;
+	public String getNom() {
+		return nom;
 	}
 
-	public void setPseudo(String pseudo) {
-		this.pseudo = pseudo;
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	public Double getSolde() {
+		return solde;
+	}
+
+	public void setSolde(Double solde) {
+		this.solde = solde;
 	}
 
 	public String getMotDePasse() {
@@ -59,21 +84,22 @@ public class Compte implements Serializable  {
 		this.motDePasse = motDePasse;
 	}
 	
-	public String getEmail() {
-		return email;
+	public String getAdresseMail() {
+		return adresseMail;
 	}
-	
-	public void setEmail(String email) {
-		this.email = email;
+
+	public void setAdresseMail(String adresseMail) {
+		this.adresseMail = adresseMail;
 	}
-	
-	public boolean isFlagAdmin() {
-		return flagAdmin;
+
+	public boolean isAdmin() {
+		return admin;
 	}
-	
-	public void setFlagAdmin(boolean flagAdmin) {
-		this.flagAdmin = flagAdmin;
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
+
 
 	//-------
 	// hashCode() & equals()
