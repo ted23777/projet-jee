@@ -83,7 +83,7 @@ public class DaoCompte implements IDaoCompte {
 	@Override
 	@TransactionAttribute( NOT_SUPPORTED )
 	public boolean verifierUniciteMail( String email, int idCompte )  {
-	    var jpql = "SELECT COUNT(c) FROM Compte c WHERE c.=:adresseMail AND c.id <> :idCompte ";
+	    var jpql = "SELECT COUNT(c) FROM Compte c WHERE c.adresseMail =:adresseMail AND c.id <> :idCompte ";
 	    var query = em.createQuery( jpql, Long.class );
 	    query.setParameter( "adresseMail", email );
 	    query.setParameter( "idCompte", idCompte );

@@ -10,9 +10,9 @@ DELETE FROM compte;
 -- Insertion dans la table compte
 INSERT INTO compte(nom, prenom, adresseMail, motDePasse, solde, admin)
 VALUES
-('Dupont', 'Jean', 'jean@3il.com', 'mdp123', 1000.00, true),
-('Durand', 'Marie', 'marie.durand@example.com', 'password456', 500.00, false),
-('Martin', 'Pierre', 'pierre.martin@example.com', '1234motdepasse', 1500.50, false),
+('Dupont', 'Jean', 'admin@3il.fr', 'admin', 1000.00, true),
+('Durand', 'Marie', 'job@3il.fr', 'job', 500.00, false),
+('Martin', 'Pierre', 'joel@3il.fr', 'joel', 1500.50, false),
 ('Lemoine', 'Lucie', 'lucie.lemoine@example.com', 'securepassword789', 200.75, true);
 
 -- Insertion dans la table parcelle

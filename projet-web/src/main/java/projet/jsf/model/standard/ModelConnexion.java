@@ -12,64 +12,61 @@ import projet.jsf.data.mapper.IMapper;
 import projet.jsf.util.CompteActif;
 import projet.jsf.util.UtilJsf;
 
-
 @RequestScoped
 @Named
 public class ModelConnexion {
 
-	//-------
+	// -------
 	// Champs
-	//-------
+	// -------
 
-	private Compte			courant;
+	private Compte courant;
 
 	@Inject
-	private CompteActif		compteActif;
+	private CompteActif compteActif;
 	@Inject
-	private ModelInfo		modelInfo;
+	private ModelInfo modelInfo;
 	@EJB
 	private IServiceConnexion serviceConnexion;
 	@Inject
-	private IMapper				mapper;
+	private IMapper mapper;
 
-	//-------
-	// Getters 
-	//-------
-	
+	// -------
+	// Getters
+	// -------
+
 	public Compte getCourant() {
-		if ( courant == null ) {
+		if (courant == null) {
 			courant = new Compte();
 		}
 		return courant;
 	}
 
-	
-	//-------
+	// -------
 	// Actons
-	//-------
-	
+	// -------
+
 	public String connect() {
-	    
-	    DtoCompte dto = serviceConnexion.sessionUtilisateurOuvrir( courant.getAdresseMail(), courant.getMotDePasse() );
-	    
-	    if ( dto != null ){
-	    	
-//		    try {
-//			    ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-//				( (HttpServletRequest) ec.getRequest() ).login( courant.getPseudo(), courant.getMotDePasse() );
-//			} catch (ServletException e) {
-//				throw new RuntimeException( e );
-//			}
 
-	        mapper.update(compteActif, mapper.map(dto) );
-	        
-	    	modelInfo.setTitre( "Bienvenue" );
-	    	modelInfo.setTexte( "Vous êtes connecté en tant que '" + compteActif.getNom() +"'.");
-		    return "info";
+		DtoCompte dto = serviceConnexion.sessionUtilisateurOuvrir(courant.getAdresseMail(), courant.getMotDePasse());
 
-	    } else {
-	        UtilJsf.messageError( "email ou mot de passe invalide." );
-	    	return null;
-	    }
-	}	
+		if (dto != null) {
+
+			mapper.update(compteActif, mapper.map(dto));
+			modelInfo.setTitre("Bienvenue");
+			modelInfo.setTexte("Vous êtes connecté en tant que '" + compteActif.getNom() + "'.");
+			return "info";
+
+		} else {
+			UtilJsf.messageError("email ou mot de passe invalide.");
+			return null;
+		}
+	}
+	
+	public CompteActif getCompteActif() {
+		return  compteActif;
+
+	}
+	
+	
 }

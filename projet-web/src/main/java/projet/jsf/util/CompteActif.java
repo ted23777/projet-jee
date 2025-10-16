@@ -15,7 +15,7 @@ public class CompteActif extends Compte {
 	}	
 	
 	public boolean isAdmin() {
-		return (isLoggedIn() && isAdmin());
+		return (isLoggedIn() && super.isAdmin());
 	}
 
 	public String disconnect() {

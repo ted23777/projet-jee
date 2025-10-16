@@ -24,6 +24,7 @@
       <!-- If you are running in a production environment, add a managed
          data source, this configuration uses the JakartaEE default data source is just for development and testing! -->
       <jta-data-source>java:/ds/projet</jta-data-source>
+      <class>projet.ejb.data.Compte</class>
       <properties>
          <!--The database schema is auto created on deployment and dropped before redeploy.
              Note: the following configuration does not drop the tables on undeploy. If you prefer this, use this
