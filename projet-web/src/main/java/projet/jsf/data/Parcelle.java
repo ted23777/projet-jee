@@ -20,6 +20,8 @@ public class Parcelle implements Serializable {
     private Boolean libre;
 
     private Integer idCompte;
+    
+    //private String nomPrenom;
 
     //-------
     // Getters & Setters
@@ -56,6 +58,7 @@ public class Parcelle implements Serializable {
     public void setIdCompte(Integer idCompte) {
         this.idCompte = idCompte;
     }
+    
 
     //-------
     // hashCode() & equals()
