@@ -62,11 +62,10 @@ public class ModelConnexion {
 			return null;
 		}
 	}
-	
+
 	public CompteActif getCompteActif() {
-		return  compteActif;
+		return compteActif;
 
 	}
-	
-	
+
 }

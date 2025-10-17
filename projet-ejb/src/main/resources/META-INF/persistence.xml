@@ -25,6 +25,12 @@
          data source, this configuration uses the JakartaEE default data source is just for development and testing! -->
       <jta-data-source>java:/ds/projet</jta-data-source>
       <class>projet.ejb.data.Compte</class>
+      <class>projet.ejb.data.Mouvement</class>
+      <class>projet.ejb.data.Concerner</class>
+      <class>projet.ejb.data.Contenir</class>
+      <class>projet.ejb.data.Culture</class>
+      <class>projet.ejb.data.Entretien</class>
+      <class>projet.ejb.data.Parcelle</class>
       <properties>
          <!--The database schema is auto created on deployment and dropped before redeploy.
              Note: the following configuration does not drop the tables on undeploy. If you prefer this, use this
