@@ -5,33 +5,77 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.IdClass;
 
 @Entity
 @Table(name = "concerner")
-@IdClass(Concerner.class)  // Spécifie que la classe Concerner elle-même gère la clé primaire composite
+@IdClass(ConcernerPK.class)
+@NamedQueries({
+    @NamedQuery(
+        name = "Concerner.findAll",
+        query = "SELECT c FROM Concerner c ORDER BY c.idEntretien, c.idCulture"
+    ),
+    @NamedQuery(
+        name = "Concerner.findByIdEntretien",
+        query = "SELECT c FROM Concerner c WHERE c.idEntretien = :idEntretien"
+    ),
+    @NamedQuery(
+        name = "Concerner.findByIdCulture",
+        query = "SELECT c FROM Concerner c WHERE c.idCulture = :idCulture"
+    ),
+    @NamedQuery(
+        name = "Concerner.count",
+        query = "SELECT COUNT(c) FROM Concerner c"
+    )
+})
 public class Concerner implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     //-------
     // Champs
     //-------
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "idculture")
-    private Culture culture;
+    @Column(name = "idculture")
+    private int idCulture;
 
     @Id
+    @Column(name = "identretien")
+    private int idEntretien;
+
     @ManyToOne
-    @JoinColumn(name = "identretien")
+    @JoinColumn(name = "idculture", insertable = false, updatable = false)
+    private Culture culture;
+
+    @ManyToOne
+    @JoinColumn(name = "identretien", insertable = false, updatable = false)
     private Entretien entretien;
 
     //-------
     // Getters & Setters
     //-------
+
+    public int getIdCulture() {
+        return idCulture;
+    }
+
+    public void setIdCulture(int idCulture) {
+        this.idCulture = idCulture;
+    }
+
+    public int getIdEntretien() {
+        return idEntretien;
+    }
+
+    public void setIdEntretien(int idEntretien) {
+        this.idEntretien = idEntretien;
+    }
 
     public Culture getCulture() {
         return culture;
@@ -49,25 +93,16 @@ public class Concerner implements Serializable {
         this.entretien = entretien;
     }
 
-    // Ajout des méthodes pour obtenir les IDs directement
-    public Integer getIdCulture() {
-        return culture != null ? culture.getId() : null;
-    }
-
-    public Integer getIdEntretien() {
-        return entretien != null ? entretien.getId() : null;
-    }
-
     //-------
-    // equals() et hashCode()
+    // equals() et hashcode()
     //-------
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((culture == null) ? 0 : culture.hashCode());
-        result = prime * result + ((entretien == null) ? 0 : entretien.hashCode());
+        result = prime * result + idCulture;
+        result = prime * result + idEntretien;
         return result;
     }
 
@@ -80,15 +115,9 @@ public class Concerner implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         Concerner other = (Concerner) obj;
-        if (culture == null) {
-            if (other.culture != null)
-                return false;
-        } else if (!culture.equals(other.culture))
+        if (idCulture != other.idCulture)
             return false;
-        if (entretien == null) {
-            if (other.entretien != null)
-                return false;
-        } else if (!entretien.equals(other.entretien))
+        if (idEntretien != other.idEntretien)
             return false;
         return true;
     }

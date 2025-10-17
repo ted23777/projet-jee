@@ -2,15 +2,38 @@ package projet.ejb.data;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Entity
 @Table(name = "entretien")
+@NamedQueries({
+    @NamedQuery(
+        name = "Entretien.findAll",
+        query = "SELECT e FROM Entretien e ORDER BY e.date DESC, e.titre ASC"
+    ),
+    @NamedQuery(
+        name = "Entretien.findByTitre",
+        query = "SELECT e FROM Entretien e " +
+                "WHERE LOWER(e.titre) LIKE :pattern " +
+                "ORDER BY e.date DESC, e.titre ASC"
+    ),
+    @NamedQuery(
+        name = "Entretien.count",
+        query = "SELECT COUNT(e) FROM Entretien e"
+    ),
+    @NamedQuery(
+        name = "Entretien.existsByTitre",
+        query = "SELECT COUNT(e) FROM Entretien e WHERE e.titre = :titre AND (:idEntretien = 0 OR e.id <> :idEntretien)"
+    )
+})
 public class Entretien {
 
     //-------
@@ -22,8 +45,8 @@ public class Entretien {
     @Column(name = "identretien")
     private int id;
 
-    @Column(name = "date")
-    private Date date;
+    @Column(name = "date_")
+    private LocalDate date;
 
     @Column(name = "titre")
     private String titre;
@@ -40,11 +63,11 @@ public class Entretien {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

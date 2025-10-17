@@ -1,6 +1,7 @@
 package projet.jsf.data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
@@ -16,7 +17,7 @@ public class Entretien implements Serializable {
     private Integer id;
 
     @NotNull(message = "La date de l'entretien doit être renseignée")
-    private String date; // Utilise une chaîne pour la date au lieu de Date pour faciliter la gestion dans JSF
+    private LocalDate date;
 
     @NotNull(message = "Le titre de l'entretien doit être renseigné")
     @Size(max = 50, message = "Le titre de l'entretien est trop long (maximum 50 caractères)")
@@ -34,11 +35,11 @@ public class Entretien implements Serializable {
         this.id = id;
     }
 
-    public String getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
