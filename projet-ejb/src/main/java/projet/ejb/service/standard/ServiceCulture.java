@@ -4,6 +4,7 @@ import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -66,5 +67,21 @@ public class ServiceCulture implements IServiceCulture {
             liste.add(mapper.map(culture));
         }
         return liste;
+    }
+    
+    @Override
+    @TransactionAttribute(NOT_SUPPORTED)
+    public List<DtoCulture> rechercherParNom(String nom) {
+        String crit = nom == null ? "" : nom.trim();
+        if (crit.isEmpty()) {
+            return listerTout();
+        }
+        return daoCulture.rechercherParNom(crit).stream().map(mapper::map).collect(Collectors.toList());
+    }
+
+    @Override
+    @TransactionAttribute(NOT_SUPPORTED)
+    public long compter() {
+        return daoCulture.compter();
     }
 }

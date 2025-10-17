@@ -6,10 +6,34 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "culture")
+@NamedQueries({
+    @NamedQuery(
+        name = "Culture.findAll",
+        query = "SELECT c FROM Culture c ORDER BY c.nom ASC"
+    ),
+    @NamedQuery(
+        name = "Culture.findByNom",
+        // plus de CONCAT / LOWER(:nom) — on compare à un paramètre déjà prêt
+        query = "SELECT c FROM Culture c " +
+                "WHERE LOWER(c.nom) LIKE :pattern " +
+                "ORDER BY c.nom ASC"
+    ),
+    @NamedQuery(
+        name = "Culture.count",
+        query = "SELECT COUNT(c) FROM Culture c"
+    ),
+    @NamedQuery(
+    	    name = "Culture.existsByNom",
+    	    query = "SELECT COUNT(c) FROM Culture c WHERE c.nom = :nom AND (:idCulture = 0 OR c.id <> :idCulture)"
+    	)
+
+})
 public class Culture {
 
     //-------
