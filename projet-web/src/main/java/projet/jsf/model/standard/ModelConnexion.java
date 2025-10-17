@@ -50,6 +50,7 @@ public class ModelConnexion {
 
 		DtoCompte dto = serviceConnexion.sessionUtilisateurOuvrir(courant.getAdresseMail(), courant.getMotDePasse());
 
+
 		if (dto != null) {
 
 			mapper.update(compteActif, mapper.map(dto));
@@ -67,6 +68,5 @@ public class ModelConnexion {
 		return  compteActif;
 
 	}
-	
-	
+
 }
