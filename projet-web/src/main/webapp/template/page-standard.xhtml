@@ -27,8 +27,12 @@
 	<h:form rendered="#{compteActif.loggedIn}">
 		<h:link outcome="comptes" value="Personnes" rendered="#{compteActif.loggedIn }" />
 		<h:panelGroup rendered="#{compteActif.admin}">
-			<h:link outcome="comptes" value="Catégories"  />
-			<h:link outcome="comptes" value="Comptes"  />
+			<h:link value="Cultures" outcome="cultures" />
+				<h:link value="Entretiens" outcome="entretiens" />
+				<h:link value="Paiements" outcome="paiements" />
+				<h:link value="Parcelles" outcome="parcelles" />
+				<h:link value="Reservations" outcome="reservations" />
+				<h:link value="Statistiques" outcome="statistiques" />
 		</h:panelGroup>
 		<h:commandLink action="#{compteActif.disconnect()}" value="Déconnexion"  />
 	</h:form>

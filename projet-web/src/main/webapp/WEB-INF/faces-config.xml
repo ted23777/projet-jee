@@ -10,11 +10,35 @@
   </navigation-case>
   <navigation-case>
    <from-outcome>comptes</from-outcome>
-   <to-view-id>/pages/admin/compte/liste.xhtml</to-view-id>
+   <to-view-id>/pages/admin/comptes/liste.xhtml</to-view-id>
   </navigation-case>
   <navigation-case>
    <from-outcome>info</from-outcome>
    <to-view-id>/pages/info.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>cultures</from-outcome>
+   <to-view-id>/pages/admin/cultures/liste.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>entretiens</from-outcome>
+   <to-view-id>/pages/admin/entretiens/liste.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>paiements</from-outcome>
+   <to-view-id>/pages/admin/paiements/liste.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>parcelles</from-outcome>
+   <to-view-id>/pages/admin/parcelles/liste.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>reservations</from-outcome>
+   <to-view-id>/pages/admin/reservations/liste.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>statistiques</from-outcome>
+   <to-view-id>/pages/admin/statistiques/liste.xhtml</to-view-id>
   </navigation-case>
  </navigation-rule>
  <application/>
