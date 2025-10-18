@@ -1,20 +1,20 @@
 package projet.commun.dto;
 
 import java.io.Serializable;
-import java.util.Date;
-
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @SuppressWarnings("serial")
-public class DtoMouvement implements Serializable  {
+public class DtoMouvement implements Serializable {
 
 	//-------
 	// Champs
 	//-------
-	
+
 	private int id;
-    private Date date;
+    private LocalDate date;
     private String libelle;
-    private Double montant;
+    private BigDecimal montant;
     private int idCompte;
 
     // Getters et Setters
@@ -27,11 +27,11 @@ public class DtoMouvement implements Serializable  {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -43,11 +43,11 @@ public class DtoMouvement implements Serializable  {
         this.libelle = libelle;
     }
 
-    public Double getMontant() {
+    public BigDecimal getMontant() {
         return montant;
     }
 
-    public void setMontant(Double montant) {
+    public void setMontant(BigDecimal montant) {
         this.montant = montant;
     }
 

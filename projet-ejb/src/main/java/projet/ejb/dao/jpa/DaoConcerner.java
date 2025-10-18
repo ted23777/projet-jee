@@ -44,7 +44,7 @@ public class DaoConcerner implements IDaoConcerner {
     @Override
     public Concerner retrouver(int idCulture, int idEntretien) {
         // Recherche de l'objet Concerner basé sur la clé composite
-        var jpql = "SELECT c FROM Concerner c WHERE c.culture.id = :idCulture AND c.entretien.id = :idEntretien";
+        var jpql = "SELECT c FROM Concerner c WHERE c.idCulture = :idCulture AND c.idEntretien = :idEntretien";
         var query = em.createQuery(jpql, Concerner.class);
         query.setParameter("idCulture", idCulture);
         query.setParameter("idEntretien", idEntretien);
@@ -53,9 +53,27 @@ public class DaoConcerner implements IDaoConcerner {
 
     @Override
     public List<Concerner> listerTout() {
-        // Listing de tous les objets Concerner
-        var jpql = "SELECT c FROM Concerner c";
-        var query = em.createQuery(jpql, Concerner.class);
-        return query.getResultList();
+        return em.createNamedQuery("Concerner.findAll", Concerner.class)
+                 .getResultList();
+    }
+
+    @Override
+    public List<Concerner> listerParIdEntretien(int idEntretien) {
+        return em.createNamedQuery("Concerner.findByIdEntretien", Concerner.class)
+                 .setParameter("idEntretien", idEntretien)
+                 .getResultList();
+    }
+
+    @Override
+    public List<Concerner> listerParIdCulture(int idCulture) {
+        return em.createNamedQuery("Concerner.findByIdCulture", Concerner.class)
+                 .setParameter("idCulture", idCulture)
+                 .getResultList();
+    }
+
+    @Override
+    public long compter() {
+        return em.createNamedQuery("Concerner.count", Long.class)
+                 .getSingleResult();
     }
 }

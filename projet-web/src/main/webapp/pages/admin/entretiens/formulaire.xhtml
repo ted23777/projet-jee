@@ -1,79 +1,164 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<ui:composition template="/template/page-standard.xhtml"
-     xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:h="http://java.sun.com/jsf/html"
-     xmlns:f="http://java.sun.com/jsf/core"
-     xmlns:ui="http://java.sun.com/jsf/facelets">>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-	 <f:metadata>
-		 <f:viewParam name="id" value="#{modelCompte.courant.id}" />
-		 <f:viewAction action="#{modelCompte.actualiserCourant()}" />
-	 </f:metadata>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:define name="titre">Compte</ui:define>
-
+<ui:composition template="/template/page-standard.xhtml">
+    <ui:define name="titre">
+        #{modelEntretien.courant.id == null ? 'Nouvel Entretien' : 'Modifier l\'Entretien'}
+    </ui:define>
     <ui:define name="contenu">
+        <h2>#{modelEntretien.courant.id == null ? '➕ Planifier un nouvel entretien' : '✏️ Modifier l\'entretien'}</h2>
 
-	<h:form>
-	
-		<table class="form">
-			<tr>
-				<td>
-					<h:outputLabel for="id">Id :</h:outputLabel>				
-				</td>
-				<td>
-					<h:inputText id="id" size="5" readonly="true"
-						value="#{modelCompte.courant.id}" />
-					<br /><h:message for="id" errorClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h:outputLabel for="pseudo">Pseudo :</h:outputLabel>				
-				</td>
-				<td>
-					<h:inputText id="pseudo" size="25" 
-						value="#{modelCompte.courant.pseudo}" />
-					<br /><h:message for="pseudo" errorClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h:outputLabel for="motDePasse">Mot de passe :</h:outputLabel>				
-				</td>
-				<td>
-					<h:inputText id="motDePasse" size="25" 
-						value="#{modelCompte.courant.motDePasse}" />
-					<br /><h:message for="motDePasse" errorClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h:outputLabel for="email">Email :</h:outputLabel>				
-				</td>
-				<td>
-					<h:inputText id="email" size="50" 
-						value="#{modelCompte.courant.email}" />
-					<br /><h:message for="email" errorClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h:outputLabel for="admin">Admin :</h:outputLabel>				
-				</td>
-				<td>
-					<h:selectBooleanCheckbox value="#{modelCompte.courant.flagAdmin}" />
-					<h:message for="admiin" errorClass="error"/>
-				</td>
-			</tr>
-		</table>
+        <div class="form-intro">
+            <p>
+                #{modelEntretien.courant.id == null ?
+                    '📋 Remplissez le formulaire ci-dessous pour planifier une nouvelle tâche d\'entretien pour vos cultures.' :
+                    '📝 Modifiez les informations de l\'entretien ci-dessous.'}
+            </p>
+        </div>
 
-		<br /> 
-		<h:commandButton value="Valider" 
-			action="#{modelCompte.validerMiseAJour()}" />
-		<h:button value="Retour" outcome="comptes" />
-	</h:form>
+        <h:form styleClass="form-entretien">
+            <fieldset class="form-section">
+                <legend>📅 Informations de base</legend>
 
-	</ui:define>
+                <table class="form">
+                    <!-- ID (lecture seule) -->
+                    <tr rendered="#{modelEntretien.courant.id != null}">
+                        <td class="label-column">
+                            <h:outputLabel for="id">🔢 Identifiant :</h:outputLabel>
+                        </td>
+                        <td>
+                            <h:inputText id="id"
+                                         size="10"
+                                         readonly="true"
+                                         value="#{modelEntretien.courant.id}"
+                                         styleClass="readonly-field" />
+                            <br />
+                            <h:message for="id" errorClass="error" />
+                        </td>
+                    </tr>
 
+                    <!-- Date de l'entretien -->
+                    <tr>
+                        <td class="label-column">
+                            <h:outputLabel for="date">📅 Date de l'entretien * :</h:outputLabel>
+                        </td>
+                        <td>
+                            <h:inputText id="date"
+                                         value="#{modelEntretien.courant.date}"
+                                         type="date"
+                                         required="true"
+                                         requiredMessage="La date de l'entretien est obligatoire"
+                                         styleClass="date-input">
+                                <f:convertDateTime pattern="yyyy-MM-dd" type="localDate" />
+                            </h:inputText>
+                            <br />
+                            <span class="field-hint">💡 Sélectionnez la date à laquelle l'entretien doit être effectué</span>
+                            <br />
+                            <h:message for="date" errorClass="error" />
+                        </td>
+                    </tr>
+
+                    <!-- Titre de l'entretien -->
+                    <tr>
+                        <td class="label-column">
+                            <h:outputLabel for="titre">🏷️ Titre de l'entretien * :</h:outputLabel>
+                        </td>
+                        <td>
+                            <h:inputText id="titre"
+                                         size="50"
+                                         maxlength="50"
+                                         value="#{modelEntretien.courant.titre}"
+                                         required="true"
+                                         requiredMessage="Le titre de l'entretien est obligatoire"
+                                         styleClass="text-input" />
+                            <br />
+                            <span class="field-hint">💡 Décrivez brièvement le type d'entretien (ex: Arrosage, Désherbage, Fertilisation, Taille...)</span>
+                            <br />
+                            <h:message for="titre" errorClass="error" />
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <br />
+
+            <!-- Section des cultures concernées -->
+            <fieldset class="form-section">
+                <legend>🌱 Cultures concernées par cet entretien</legend>
+
+                <p class="section-description">
+                    Sélectionnez une ou plusieurs cultures qui nécessitent cet entretien.
+                    Vous pouvez sélectionner plusieurs cultures en maintenant la touche Ctrl (Windows) ou Cmd (Mac).
+                </p>
+
+                <h:panelGroup rendered="#{empty modelEntretien.culturesDisponibles}">
+                    <div class="warning-message">
+                        <strong>⚠️ Aucune culture disponible</strong>
+                        <p>Vous devez d'abord créer des cultures avant de pouvoir les associer à un entretien.</p>
+                        <h:button value="➕ Créer une culture"
+                                  outcome="/pages/admin/cultures/formulaire"
+                                  styleClass="btn btn-primary" />
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{not empty modelEntretien.culturesDisponibles}">
+                    <h:selectManyListbox id="cultures"
+                                         value="#{modelEntretien.culturesConcerneesIds}"
+                                         size="10"
+                                         styleClass="cultures-select">
+                        <f:selectItems value="#{modelEntretien.culturesDisponibles}"
+                                       var="culture"
+                                       itemValue="#{culture.id}"
+                                       itemLabel="#{culture.nom}" />
+                    </h:selectManyListbox>
+                    <br />
+                    <span class="field-hint">
+                        💡 Astuce : maintenez Ctrl (ou Cmd) pour sélectionner plusieurs cultures
+                    </span>
+                    <br />
+                    <h:message for="cultures" errorClass="error" />
+                </h:panelGroup>
+            </fieldset>
+
+            <br />
+
+            <!-- Boutons d'action -->
+            <div class="form-actions">
+                <h:commandButton action="#{modelEntretien.validerMiseAJour}"
+                                 value="#{modelEntretien.courant.id == null ? '✅ Créer l\'entretien' : '💾 Enregistrer les modifications'}"
+                                 styleClass="btn btn-success btn-large" />
+
+                <h:button outcome="liste"
+                          value="❌ Annuler"
+                          styleClass="btn btn-secondary btn-large" />
+            </div>
+
+            <div class="form-footer">
+                <p class="required-note">* Champs obligatoires</p>
+            </div>
+        </h:form>
+
+        <!-- Aide contextuelle -->
+        <div class="help-section">
+            <h3>❓ Aide</h3>
+            <ul>
+                <li><strong>Date</strong> : Indiquez la date prévue pour effectuer cet entretien</li>
+                <li><strong>Titre</strong> : Donnez un nom explicite à l'entretien (maximum 50 caractères)</li>
+                <li><strong>Cultures</strong> : Sélectionnez toutes les cultures qui nécessitent ce type d'entretien à cette date</li>
+                <li><strong>Modification</strong> : Vous pouvez modifier les cultures associées à tout moment</li>
+                <li><strong>Suppression</strong> : Pour supprimer un entretien, retournez à la liste des entretiens</li>
+            </ul>
+        </div>
+    </ui:define>
+
+    <f:metadata>
+        <f:viewParam name="id" value="#{modelEntretien.courant.id}" />
+        <f:viewAction action="#{modelEntretien.actualiserCourant}" />
+    </f:metadata>
 </ui:composition>
+</html>

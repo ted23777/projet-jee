@@ -1,63 +1,167 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:h="http://java.sun.com/jsf/html"
-     xmlns:f="http://java.sun.com/jsf/core"
-     xmlns:ui="http://java.sun.com/jsf/facelets"
-     template="/template/page-standard.xhtml" >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-     <ui:define name="titre">Liste des comptes</ui:define>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+<ui:composition template="/template/page-standard.xhtml">
+    <ui:define name="titre">
+        Gestion des Entretiens
+    </ui:define>
     <ui:define name="contenu">
+        <h2>Planification et Suivi des Entretiens des Parcelles</h2>
 
-	<h:form>
+        <!-- Barre de recherche et filtres avancés -->
+        <h:form>
+            <fieldset class="search-panel">
+                <legend>🔍 Recherche et Filtres</legend>
 
-		<h:dataTable styleClass="liste" 
-			value="#{modelCompte.liste}" var="item" 
-			rowClasses="impair, pair" columnClasses="left,left,center"
-		>
-			<h:column>
-				<f:facet name="header">
-					<h:outputText value="Psudo" />
-				</f:facet>
-				#{item.pseudo}
-			</h:column>
-			
-			<h:column>
-				<f:facet name="header">
-					<h:outputText value="Rôle" />
-				</f:facet>
-				<h:outputText rendered="#{! item.flagAdmin}" value="UTILIDZYRUR" />
-				<h:outputText rendered="#{item.flagAdmin}" value="ADMIN" />
-			</h:column>
-			
-			<h:column>
-				<f:facet name="header">
-					<h:outputText value="Actions" />
-				</f:facet>
-				<h:button
-					outcome="formulaire?id=#{item.id}"
-					image="#{ resource['images:modifier.png'] }"
-					title="Modifier" 
-					styleClass="image-action"
-				/>
-				<h:commandButton action="#{modelCompte.supprimer(item)}" 
-					value="Supprimer" 
-					onclick="return confirm('Confirmez-vous la suppression ?')" 
-					image="#{ resource['images:supprimer.png'] }" 
-					title="Supprimer"
-					styleClass="image-action"
-				>
-					<f:ajax render="@form" execute="@form" />				
-				</h:commandButton>
-			</h:column>
-			
-		</h:dataTable>
-		
-		<br />
-		<h:button value="Ajouter" outcome="formulaire" />
+                <h:panelGrid columns="3" columnClasses="filter-column">
+                    <!-- Recherche par titre -->
+                    <h:panelGroup>
+                        <h:outputLabel value="Recherche par titre:" for="critere" />
+                        <h:inputText id="critere"
+                                     value="#{modelEntretien.critereRecherche}"
+                                     placeholder="Ex: Désherbage, Arrosage..."
+                                     styleClass="search-input" />
+                    </h:panelGroup>
 
-	</h:form>
+                    <!-- Filtre par date de début -->
+                    <h:panelGroup rendered="#{modelEntretien.filtreActif}">
+                        <h:outputLabel value="Du:" for="dateDebut" />
+                        <h:inputText id="dateDebut"
+                                     value="#{modelEntretien.dateDebut}"
+                                     type="date"
+                                     styleClass="date-input">
+                            <f:convertDateTime pattern="yyyy-MM-dd" type="localDate" />
+                        </h:inputText>
+                    </h:panelGroup>
 
-	</ui:define>
+                    <!-- Filtre par date de fin -->
+                    <h:panelGroup rendered="#{modelEntretien.filtreActif}">
+                        <h:outputLabel value="Au:" for="dateFin" />
+                        <h:inputText id="dateFin"
+                                     value="#{modelEntretien.dateFin}"
+                                     type="date"
+                                     styleClass="date-input">
+                            <f:convertDateTime pattern="yyyy-MM-dd" type="localDate" />
+                        </h:inputText>
+                    </h:panelGroup>
+                </h:panelGrid>
 
+                <h:panelGrid columns="4" styleClass="button-panel">
+                    <h:commandButton value="🔍 Rechercher"
+                                     action="#{modelEntretien.rechercher}"
+                                     styleClass="btn btn-primary">
+                        <f:ajax render="@form" />
+                    </h:commandButton>
+
+                    <h:commandButton value="#{modelEntretien.filtreActif ? '📅 Désactiver filtre période' : '📅 Activer filtre période'}"
+                                     action="#{modelEntretien.toggleFiltre}"
+                                     styleClass="btn btn-secondary">
+                        <f:ajax render="@form" />
+                    </h:commandButton>
+
+                    <h:commandButton value="🔄 Réinitialiser"
+                                     action="#{modelEntretien.reinitialiserRecherche}"
+                                     styleClass="btn btn-warning">
+                        <f:ajax render="@form" />
+                    </h:commandButton>
+
+                    <h:outputText value="#{modelEntretien.nombreAffiches} / #{modelEntretien.nombreTotal} entretiens"
+                                  styleClass="info-text"
+                                  rendered="#{modelEntretien.hasFiltresActifs()}" />
+                </h:panelGrid>
+            </fieldset>
+        </h:form>
+
+        <br />
+
+        <!-- Tableau des entretiens -->
+        <h:form>
+            <h:panelGroup rendered="#{empty modelEntretien.liste}">
+                <div class="empty-message">
+                    <h4>📋 Aucun entretien planifié</h4>
+                    <p>Commencez par ajouter votre premier entretien pour les parcelles.</p>
+                </div>
+            </h:panelGroup>
+
+            <h:dataTable styleClass="liste entretiens-table"
+                         value="#{modelEntretien.liste}"
+                         var="item"
+                         rowClasses="impair, pair"
+                         columnClasses="center,left,center,left,center"
+                         rendered="#{not empty modelEntretien.liste}">
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="📅 Date" />
+                    </f:facet>
+                    <h:outputText value="#{item.date}">
+                        <f:convertDateTime pattern="dd/MM/yyyy" type="localDate" />
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="🏷️ Titre de l'entretien" />
+                    </f:facet>
+                    <strong>#{item.titre}</strong>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="🌱 Cultures concernées" />
+                    </f:facet>
+                    <h:outputText value="#{modelEntretien.getCulturesNoms(item)}"
+                                  styleClass="cultures-list" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="ℹ️ Informations" />
+                    </f:facet>
+                    <h:outputText value="ID: #{item.id}" styleClass="small-text" />
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="⚙️ Actions" />
+                    </f:facet>
+
+                    <!-- Bouton Modifier -->
+                    <h:button outcome="formulaire?id=#{item.id}"
+                              image="#{ resource['images:modifier.png'] }"
+                              title="✏️ Modifier cet entretien"
+                              styleClass="image-action action-edit" />
+
+                    <!-- Bouton Supprimer -->
+                    <h:commandButton action="#{modelEntretien.supprimer(item)}"
+                                     onclick="return confirm('⚠️ Êtes-vous sûr de vouloir supprimer cet entretien ?\n\n📋 Titre: #{item.titre}\n📅 Date: #{item.date}\n\nCette action supprimera également toutes les associations avec les cultures.');"
+                                     image="#{ resource['images:supprimer.png'] }"
+                                     title="🗑️ Supprimer cet entretien"
+                                     styleClass="image-action action-delete">
+                        <f:ajax render="@form" execute="@form" />
+                    </h:commandButton>
+                </h:column>
+            </h:dataTable>
+        </h:form>
+
+        <br />
+
+        <!-- Bouton d'ajout avec style -->
+        <div class="action-footer">
+            <h:button value="➕ Planifier un nouvel entretien"
+                      outcome="formulaire"
+                      styleClass="btn btn-success btn-large" />
+
+            <p class="help-text">
+                💡 Les entretiens vous permettent de planifier et suivre les tâches de maintenance
+                pour vos différentes cultures (arrosage, désherbage, fertilisation, etc.)
+            </p>
+        </div>
+    </ui:define>
 </ui:composition>
+</html>

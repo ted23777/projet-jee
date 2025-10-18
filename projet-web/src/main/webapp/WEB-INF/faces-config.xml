@@ -25,8 +25,8 @@
    <to-view-id>/pages/admin/entretiens/liste.xhtml</to-view-id>
   </navigation-case>
   <navigation-case>
-   <from-outcome>paiements</from-outcome>
-   <to-view-id>/pages/admin/paiements/liste.xhtml</to-view-id>
+   <from-outcome>mouvements</from-outcome>
+   <to-view-id>/pages/admin/mouvements/liste.xhtml</to-view-id>
   </navigation-case>
   <navigation-case>
    <from-outcome>parcelles</from-outcome>

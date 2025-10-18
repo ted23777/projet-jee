@@ -1,63 +1,78 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:h="http://java.sun.com/jsf/html"
-     xmlns:f="http://java.sun.com/jsf/core"
-     xmlns:ui="http://java.sun.com/jsf/facelets"
-     template="/template/page-standard.xhtml" >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-     <ui:define name="titre">Liste des comptes</ui:define>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+<ui:composition template="/template/page-standard.xhtml">
+    <ui:define name="titre">
+        Cultures
+    </ui:define>
     <ui:define name="contenu">
+        <h2>Catalogue des cultures</h2>
 
-	<h:form>
+        <!-- Barre de recherche -->
+        <h:form>
+            <h:panelGrid columns="3">
+                <h:inputText value="#{modelCulture.critereRecherche}" 
+                             placeholder="Rechercher par nom..." />
+                <h:commandButton value="Rechercher" 
+                                 action="#{modelCulture.rechercher}" />
+                <h:commandButton value="Réinitialiser" 
+                                 action="#{modelCulture.reinitialiserRecherche}" />
+            </h:panelGrid>
+        </h:form>
 
-		<h:dataTable styleClass="liste" 
-			value="#{modelCompte.liste}" var="item" 
-			rowClasses="impair, pair" columnClasses="left,left,center"
-		>
-			<h:column>
-				<f:facet name="header">
-					<h:outputText value="Psudo" />
-				</f:facet>
-				#{item.pseudo}
-			</h:column>
-			
-			<h:column>
-				<f:facet name="header">
-					<h:outputText value="Rôle" />
-				</f:facet>
-				<h:outputText rendered="#{! item.flagAdmin}" value="UTILIDZYRUR" />
-				<h:outputText rendered="#{item.flagAdmin}" value="ADMIN" />
-			</h:column>
-			
-			<h:column>
-				<f:facet name="header">
-					<h:outputText value="Actions" />
-				</f:facet>
-				<h:button
-					outcome="formulaire?id=#{item.id}"
-					image="#{ resource['images:modifier.png'] }"
-					title="Modifier" 
-					styleClass="image-action"
-				/>
-				<h:commandButton action="#{modelCompte.supprimer(item)}" 
-					value="Supprimer" 
-					onclick="return confirm('Confirmez-vous la suppression ?')" 
-					image="#{ resource['images:supprimer.png'] }" 
-					title="Supprimer"
-					styleClass="image-action"
-				>
-					<f:ajax render="@form" execute="@form" />				
-				</h:commandButton>
-			</h:column>
-			
-		</h:dataTable>
-		
-		<br />
-		<h:button value="Ajouter" outcome="formulaire" />
+        <br />
 
-	</h:form>
+        <h:form>
+            <h:panelGroup rendered="#{empty modelCulture.liste}">
+                <h4>Aucune culture disponible.</h4>
+            </h:panelGroup>
 
-	</ui:define>
+            <h:dataTable styleClass="liste" value="#{modelCulture.liste}"
+                         var="item" rowClasses="impair, pair"
+                         columnClasses="center,left,center"
+                         rendered="#{not empty modelCulture.liste}">
 
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Id" />
+                    </f:facet>
+                    #{item.id}
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Nom de la culture" />
+                    </f:facet>
+                    #{item.nom}
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Actions" />
+                    </f:facet>
+                    <!-- bouton modifier -->
+                    <h:button outcome="formulaire?id=#{item.id}"
+                              image="#{ resource['images:modifier.png'] }" 
+                              title="Modifier"
+                              styleClass="image-action" />
+
+                    <!-- bouton supprimer -->
+                    <h:commandButton action="#{modelCulture.supprimer(item)}"
+                                     onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
+                                     image="#{ resource['images:supprimer.png'] }" 
+                                     title="Supprimer"
+                                     styleClass="image-action" />
+                </h:column>
+            </h:dataTable>
+        </h:form>
+
+        <br />
+        <h:button value="Ajouter une culture" outcome="formulaire" />
+    </ui:define>
 </ui:composition>
+</html>

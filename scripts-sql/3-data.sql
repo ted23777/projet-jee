@@ -24,7 +24,7 @@ VALUES
 (180.75, false, 4);
 
 -- Insertion dans la table mouvement
-INSERT INTO mouvement(date_, libellé, montant, idCompte)
+INSERT INTO mouvement(date_, libelle, montant, idCompte)
 VALUES
 ('2025-10-01', 'Achat de semences', 250.00, 1),
 ('2025-10-02', 'Entretien parcelle', 100.50, 2),

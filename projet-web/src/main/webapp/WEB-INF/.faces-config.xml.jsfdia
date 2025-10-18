@@ -20,9 +20,10 @@
     TARGET="rules:#pages#admin#entretiens#liste.xhtml"
     TITLE="entretiens" model-entity="JSFProcessItemOutput"/>
    <PROCESS-ITEM-OUTPUT
-    ID="paiements::#pages#admin#paiements#liste.xhtml" NAME="output5"
-    PATH="/pages/admin/paiements/liste.xhtml"
-    TARGET="rules:#pages#admin#paiements#liste.xhtml" TITLE="paiements" model-entity="JSFProcessItemOutput"/>
+    ID="mouvements::#pages#admin#mouvements#liste.xhtml" NAME="output5"
+    PATH="/pages/admin/mouvements/liste.xhtml"
+    TARGET="rules:#pages#admin#mouvements#liste.xhtml"
+    TITLE="mouvements" model-entity="JSFProcessItemOutput"/>
    <PROCESS-ITEM-OUTPUT
     ID="parcelles::#pages#admin#parcelles#liste.xhtml" NAME="output6"
     PATH="/pages/admin/parcelles/liste.xhtml"
@@ -64,4 +65,6 @@
  <PROCESS-ITEM NAME="rules:#pages#admin#statistiques#liste.xhtml"
   PATH="/pages/admin/statistiques/liste.xhtml" SHAPE="408,472,50,25"
   model-entity="JSFProcessGroup" persistent="true"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin#mouvements#liste.xhtml"
+  PATH="/pages/admin/mouvements/liste.xhtml" SHAPE="568,600,50,25" model-entity="JSFProcessGroup"/>
 </PROCESS>

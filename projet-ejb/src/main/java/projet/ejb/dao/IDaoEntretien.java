@@ -15,4 +15,10 @@ public interface IDaoEntretien {
     Entretien retrouver(int idEntretien);
 
     List<Entretien> listerTout();
+
+    List<Entretien> rechercherParTitre(String titre);
+
+    long compter();
+
+    boolean titreExiste(String titre, int idEntretien);
 }

@@ -2,17 +2,27 @@ package projet.ejb.data;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Entity
 @Table(name = "mouvement")
+@NamedQueries({
+    @NamedQuery(name = "Mouvement.findAll", query = "SELECT m FROM Mouvement m ORDER BY m.date DESC, m.id DESC"),
+    @NamedQuery(name = "Mouvement.findByLibelle", query = "SELECT m FROM Mouvement m WHERE LOWER(m.libelle) LIKE :pattern ORDER BY m.date DESC"),
+    @NamedQuery(name = "Mouvement.findByIdCompte", query = "SELECT m FROM Mouvement m WHERE m.compte.id = :idCompte ORDER BY m.date DESC"),
+    @NamedQuery(name = "Mouvement.count", query = "SELECT COUNT(m) FROM Mouvement m")
+})
 public class Mouvement {
 
     //-------
@@ -24,17 +34,17 @@ public class Mouvement {
     @Column(name = "idmouvement")
     private int id;
 
-    @Column(name = "date_")
-    private Date date;
+    @Column(name = "date_", nullable = false)
+    private LocalDate date;
 
-    @Column(name = "libelle")
+    @Column(name = "libelle", nullable = false, length = 50)
     private String libelle;
 
-    @Column(name = "montant")
-    private Double montant;
+    @Column(name = "montant", nullable = false, precision = 15, scale = 2)
+    private BigDecimal montant;
 
     @ManyToOne
-    @JoinColumn(name = "idcompte")
+    @JoinColumn(name = "idcompte", nullable = false)
     private Compte compte;
 
     //-------
@@ -49,11 +59,11 @@ public class Mouvement {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
@@ -65,11 +75,11 @@ public class Mouvement {
         this.libelle = libelle;
     }
 
-    public Double getMontant() {
+    public BigDecimal getMontant() {
         return montant;
     }
 
-    public void setMontant(Double montant) {
+    public void setMontant(BigDecimal montant) {
         this.montant = montant;
     }
 

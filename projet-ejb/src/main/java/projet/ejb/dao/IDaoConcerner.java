@@ -15,5 +15,10 @@ public interface IDaoConcerner {
     Concerner retrouver(int idCulture, int idEntretien);
 
     List<Concerner> listerTout();
-    
+
+    List<Concerner> listerParIdEntretien(int idEntretien);
+
+    List<Concerner> listerParIdCulture(int idCulture);
+
+    long compter();
 }

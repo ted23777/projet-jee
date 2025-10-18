@@ -1,7 +1,7 @@
 package projet.commun.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 
 @SuppressWarnings("serial")
@@ -10,9 +10,9 @@ public class DtoEntretien implements Serializable  {
 	//-------
 	// Champs
 	//-------
-	
+
 	private Integer id;
-    private Date date;
+    private LocalDate date;
     private String titre;
 
     // Getters et Setters
@@ -25,11 +25,11 @@ public class DtoEntretien implements Serializable  {
         this.id = id;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 
