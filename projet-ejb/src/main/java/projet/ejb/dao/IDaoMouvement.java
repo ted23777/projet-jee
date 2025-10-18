@@ -15,4 +15,10 @@ public interface IDaoMouvement {
     Mouvement retrouver(int idMouvement);
 
     List<Mouvement> listerTout();
+
+    List<Mouvement> rechercherParLibelle(String libelle);
+
+    List<Mouvement> listerParIdCompte(int idCompte);
+
+    long compter();
 }

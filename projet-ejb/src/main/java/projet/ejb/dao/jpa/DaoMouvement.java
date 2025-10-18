@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import projet.ejb.dao.IDaoMouvement;
 import projet.ejb.data.Mouvement;
@@ -43,8 +44,31 @@ public class DaoMouvement implements IDaoMouvement {
 
     @Override
     public List<Mouvement> listerTout() {
-        var jpql = "SELECT m FROM Mouvement m ORDER BY m.date";
-        var query = em.createQuery(jpql, Mouvement.class);
+        TypedQuery<Mouvement> query = em.createNamedQuery("Mouvement.findAll", Mouvement.class);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Mouvement> rechercherParLibelle(String libelle) {
+        String crit = (libelle == null) ? "" : libelle.trim().toLowerCase();
+        if (crit.isEmpty()) {
+            return listerTout();
+        }
+        TypedQuery<Mouvement> query = em.createNamedQuery("Mouvement.findByLibelle", Mouvement.class);
+        query.setParameter("pattern", "%" + crit + "%");
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Mouvement> listerParIdCompte(int idCompte) {
+        TypedQuery<Mouvement> query = em.createNamedQuery("Mouvement.findByIdCompte", Mouvement.class);
+        query.setParameter("idCompte", idCompte);
+        return query.getResultList();
+    }
+
+    @Override
+    public long compter() {
+        TypedQuery<Long> query = em.createNamedQuery("Mouvement.count", Long.class);
+        return query.getSingleResult();
     }
 }
