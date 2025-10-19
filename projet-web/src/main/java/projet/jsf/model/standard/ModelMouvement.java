@@ -20,6 +20,7 @@ import projet.commun.service.IServiceMouvement;
 import projet.jsf.data.Compte;
 import projet.jsf.data.Mouvement;
 import projet.jsf.data.mapper.IMapper;
+import projet.jsf.util.CompteActif;
 import projet.jsf.util.UtilJsf;
 
 @SuppressWarnings("serial")
@@ -27,361 +28,367 @@ import projet.jsf.util.UtilJsf;
 @ViewScoped
 public class ModelMouvement implements Serializable {
 
-	//-------
-	// Champs
-	//-------
+    //-------
+    // Champs
+    //-------
 
-	private List<Mouvement>		liste;
-	private Mouvement			courant;
-	private String 				critereRecherche;
-	private LocalDate			dateDebut;
-	private LocalDate			dateFin;
-	private BigDecimal			montantMin;
-	private BigDecimal			montantMax;
-	private boolean				filtreActif;
-	private Integer				compteSelectionne;
+    private List<Mouvement> liste;
+    private Mouvement courant;
+    private String critereRecherche;
+    private LocalDate dateDebut;
+    private LocalDate dateFin;
+    private BigDecimal montantMin;
+    private BigDecimal montantMax;
+    private boolean filtreActif;
+    private Integer compteSelectionne;
+    private List<Compte> comptesDisponibles;
 
-	// Pour la sÈlection du compte
-	private List<Compte>		comptesDisponibles;
+    @EJB
+    private IServiceMouvement serviceMouvement;
 
-	@EJB
-	private IServiceMouvement	serviceMouvement;
+    @EJB
+    private IServiceCompte serviceCompte;
 
-	@EJB
-	private IServiceCompte		serviceCompte;
+    @Inject
+    private IMapper mapper;
 
-	@Inject
-	private IMapper				mapper;
+    @Inject
+    private CompteActif compteActif;
 
-	//-------
-	// Getters & Setters
-	//-------
+    //-------
+    // Getters & Setters
+    //-------
 
-	public List<Mouvement> getListe() {
-		if (liste == null) {
-			chargerListe();
-		}
-		return liste;
-	}
+    public List<Mouvement> getListe() {
+        if (liste == null) {
+            chargerListe();
+        }
+        return liste;
+    }
 
-	public Mouvement getCourant() {
-		if (courant == null) {
-			courant = new Mouvement();
-		}
-		return courant;
-	}
+    public Mouvement getCourant() {
+        if (courant == null) {
+            courant = new Mouvement();
+        }
+        return courant;
+    }
 
-	public void setCourant(Mouvement courant) {
+    public void setCourant(Mouvement courant) {
         this.courant = courant;
     }
 
-	public String getCritereRecherche() {
-        return critereRecherche;
+    public String getCritereRecherche() { return critereRecherche; }
+    public void setCritereRecherche(String critereRecherche) { this.critereRecherche = critereRecherche; }
+
+    public LocalDate getDateDebut() { return dateDebut; }
+    public void setDateDebut(LocalDate dateDebut) { this.dateDebut = dateDebut; }
+
+    public LocalDate getDateFin() { return dateFin; }
+    public void setDateFin(LocalDate dateFin) { this.dateFin = dateFin; }
+
+    public BigDecimal getMontantMin() { return montantMin; }
+    public void setMontantMin(BigDecimal montantMin) { this.montantMin = montantMin; }
+
+    public BigDecimal getMontantMax() { return montantMax; }
+    public void setMontantMax(BigDecimal montantMax) { this.montantMax = montantMax; }
+
+    public boolean isFiltreActif() { return filtreActif; }
+    public void setFiltreActif(boolean filtreActif) { this.filtreActif = filtreActif; }
+
+    public Integer getCompteSelectionne() { return compteSelectionne; }
+    public void setCompteSelectionne(Integer compteSelectionne) { this.compteSelectionne = compteSelectionne; }
+
+    public List<Compte> getComptesDisponibles() {
+        if (comptesDisponibles == null) {
+            chargerComptesDisponibles();
+        }
+        return comptesDisponibles;
     }
 
-    public void setCritereRecherche(String critereRecherche) {
-        this.critereRecherche = critereRecherche;
+    //------------------
+    // M√©thodes internes
+    //------------------
+
+    /*private void chargerListe() {
+        try {
+            liste = new ArrayList<>();
+            List<DtoMouvement> dtos;
+
+            // Admin -> tout, User -> seulement ses mouvements
+            if (compteActif.isAdmin()) {
+                if (critereRecherche != null && !critereRecherche.trim().isEmpty()) {
+                    dtos = serviceMouvement.rechercherParLibelle(critereRecherche.trim());
+                } else {
+                    dtos = serviceMouvement.listerTout();
+                }
+            } else {
+                if (critereRecherche != null && !critereRecherche.trim().isEmpty()) {
+                    dtos = serviceMouvement.rechercherParLibelle(critereRecherche.trim());
+                } else {
+                    dtos = serviceMouvement.listerTout();
+                }
+                final Integer idActif = compteActif.getId();
+                if (idActif != null) {
+                    dtos = dtos.stream()
+                            .filter(dto -> dto.getIdCompte() == idActif)
+                            .collect(Collectors.toList());
+                }
+            }
+
+            // Filtre ‚Äúcompte s√©lectionn√©‚Äù ‚Äî Admin uniquement
+            if (compteSelectionne != null && compteSelectionne > 0) {
+                dtos = dtos.stream()
+                        .filter(dto -> dto.getIdCompte() == compteSelectionne)
+                        .collect(Collectors.toList());
+            }
+
+            // Filtres avanc√©s
+            if (filtreActif) {
+                dtos = dtos.stream()
+                        .filter(dto -> {
+                            if (dateDebut != null && dto.getDate().isBefore(dateDebut)) return false;
+                            if (dateFin != null && dto.getDate().isAfter(dateFin)) return false;
+                            if (montantMin != null && dto.getMontant().compareTo(montantMin) < 0) return false;
+                            if (montantMax != null && dto.getMontant().compareTo(montantMax) > 0) return false;
+                            return true;
+                        })
+                        .collect(Collectors.toList());
+            }
+
+            for (DtoMouvement dto : dtos) {
+                liste.add(mapper.map(dto));
+            }
+        } catch (Exception e) {
+            UtilJsf.messageError("Erreur lors du chargement des mouvements : " + e.getMessage());
+            liste = new ArrayList<>();
+        }
+    }*/
+    
+    private void chargerListe() {
+        try {
+            liste = new ArrayList<>();
+            List<DtoMouvement> dtos;
+
+            // 1Ô∏è‚É£ R√©cup√©ration de la base selon le r√¥le
+            if (compteActif.isAdmin()) {
+                dtos = serviceMouvement.listerTout();
+            } else {
+            	Integer idActif = compteActif.getId();
+            	dtos = serviceMouvement.listerTout().stream()
+            	        .filter(dto -> idActif != null && dto.getIdCompte() == idActif)
+            	        .collect(Collectors.toList());
+            }
+
+            // 2Ô∏è‚É£ Filtrage par libell√©
+            if (critereRecherche != null && !critereRecherche.trim().isEmpty()) {
+                String crit = critereRecherche.trim().toLowerCase();
+                dtos = dtos.stream()
+                        .filter(dto -> dto.getLibelle() != null &&
+                                       dto.getLibelle().toLowerCase().contains(crit))
+                        .collect(Collectors.toList());
+            }
+
+            // 3Ô∏è‚É£ Filtrage par compte (admin)
+            if (compteSelectionne != null && compteSelectionne > 0) {
+                dtos = dtos.stream()
+                        .filter(dto -> dto.getIdCompte() == compteSelectionne)
+                        .collect(Collectors.toList());
+            }
+
+            // 4Ô∏è‚É£ Filtrage avanc√© (date et montant)
+            if (filtreActif) {
+                dtos = dtos.stream()
+                        .filter(dto -> {
+                            LocalDate date = dto.getDate();
+                            if (dateDebut != null && date.isBefore(dateDebut)) return false;
+                            if (dateFin != null && date.isAfter(dateFin)) return false;
+                            if (montantMin != null && dto.getMontant().compareTo(montantMin) < 0) return false;
+                            if (montantMax != null && dto.getMontant().compareTo(montantMax) > 0) return false;
+                            return true;
+                        })
+                        .collect(Collectors.toList());
+            }
+
+            // 5Ô∏è‚É£ Mapping final
+            for (DtoMouvement dto : dtos) {
+                liste.add(mapper.map(dto));
+            }
+
+        } catch (Exception e) {
+            UtilJsf.messageError("Erreur lors du chargement des mouvements : " + e.getMessage());
+            liste = new ArrayList<>();
+        }
     }
 
-    public LocalDate getDateDebut() {
-		return dateDebut;
-	}
 
-	public void setDateDebut(LocalDate dateDebut) {
-		this.dateDebut = dateDebut;
-	}
+    private void chargerComptesDisponibles() {
+        try {
+            comptesDisponibles = new ArrayList<>();
+            if (compteActif.isAdmin()) {
+                for (DtoCompte dto : serviceCompte.listerTout()) {
+                    comptesDisponibles.add(mapper.map(dto));
+                }
+            } else {
+                DtoCompte dto = serviceCompte.retrouver(compteActif.getId());
+                if (dto != null) {
+                    comptesDisponibles.add(mapper.map(dto));
+                }
+            }
+        } catch (Exception e) {
+            UtilJsf.messageError("Erreur lors du chargement des comptes : " + e.getMessage());
+            comptesDisponibles = new ArrayList<>();
+        }
+    }
 
-	public LocalDate getDateFin() {
-		return dateFin;
-	}
+    //------------------
+    // Initialisations
+    //------------------
 
-	public void setDateFin(LocalDate dateFin) {
-		this.dateFin = dateFin;
-	}
+    public void initialiserMouvement(Compte compte) {
+        if (courant == null) {
+            courant = new Mouvement();
+        }
+        if (courant.getIdCompte() == null && compte != null && compte.getId() != null) {
+            courant.setIdCompte(compte.getId());
+        }
+    }
 
-	public BigDecimal getMontantMin() {
-		return montantMin;
-	}
+    public String actualiserCourant() {
+        if (courant != null && courant.getId() != null) {
+            DtoMouvement dto = serviceMouvement.retrouver(courant.getId());
+            if (dto == null) {
+                UtilJsf.messageError("Le mouvement demand√© n'existe pas.");
+                return "liste";
+            } else {
+                courant = mapper.map(dto);
+            }
+        }
+        return null;
+    }
 
-	public void setMontantMin(BigDecimal montantMin) {
-		this.montantMin = montantMin;
-	}
+    //-------
+    // Actions CRUD
+    //-------
 
-	public BigDecimal getMontantMax() {
-		return montantMax;
-	}
+    public String validerMiseAJour() {
+        try {
+            if (courant.getDate() == null) {
+                UtilJsf.messageError("La date du mouvement est obligatoire.");
+                return null;
+            }
 
-	public void setMontantMax(BigDecimal montantMax) {
-		this.montantMax = montantMax;
-	}
+            if (courant.getLibelle() == null || courant.getLibelle().trim().isEmpty()) {
+                UtilJsf.messageError("Le libell√© du mouvement est obligatoire.");
+                return null;
+            }
 
-	public boolean isFiltreActif() {
-		return filtreActif;
-	}
+            if (courant.getMontant() == null || courant.getMontant().compareTo(BigDecimal.ZERO) <= 0) {
+                UtilJsf.messageError("Le montant du mouvement doit √™tre positif.");
+                return null;
+            }
 
-	public void setFiltreActif(boolean filtreActif) {
-		this.filtreActif = filtreActif;
-	}
+            if (courant.getIdCompte() == null || courant.getIdCompte() <= 0) {
+                UtilJsf.messageError("Le compte associ√© au mouvement est obligatoire.");
+                return null;
+            }
 
-	public Integer getCompteSelectionne() {
-		return compteSelectionne;
-	}
+            if (courant.getId() == null) {
+                serviceMouvement.inserer(mapper.map(courant));
+                UtilJsf.messageInfo("Mouvement cr√©√© avec succ√®s !");
+            } else {
+                serviceMouvement.modifier(mapper.map(courant));
+                UtilJsf.messageInfo("Mouvement modifi√© avec succ√®s !");
+            }
 
-	public void setCompteSelectionne(Integer compteSelectionne) {
-		this.compteSelectionne = compteSelectionne;
-	}
+            liste = null;
+            chargerListe();
+            return "liste?faces-redirect=true";
+            //return "liste";
 
-	public List<Compte> getComptesDisponibles() {
-		if (comptesDisponibles == null) {
-			chargerComptesDisponibles();
-		}
-		return comptesDisponibles;
-	}
+        } catch (ExceptionValidation e) {
+            UtilJsf.messageError(e.getMessage());
+            return null;
+        } catch (Exception e) {
+            UtilJsf.messageError("Erreur lors de l'enregistrement : " + e.getMessage());
+            return null;
+        }
+    }
 
-	//------------------
-	// MÈthodes internes
-	//------------------
+    public String supprimer(Mouvement item) {
+        try {
+            serviceMouvement.supprimer(item.getId());
+            if (liste != null) {
+                liste.remove(item);
+            }
+            UtilJsf.messageInfo("Mouvement supprim√© avec succ√®s !");
+        } catch (ExceptionValidation e) {
+            UtilJsf.messageError(e.getMessage());
+        } catch (Exception e) {
+            UtilJsf.messageError("Erreur lors de la suppression : " + e.getMessage());
+        }
+        return null;
+    }
 
-	/**
-	 * Charge la liste selon les critËres de recherche et de filtrage.
-	 */
-	private void chargerListe() {
-		try {
-			liste = new ArrayList<>();
-			List<DtoMouvement> dtos;
+    //-------
+    // Utilitaires
+    //-------
 
-			// Recherche par libellÈ
-			if (critereRecherche != null && !critereRecherche.trim().isEmpty()) {
-				dtos = serviceMouvement.rechercherParLibelle(critereRecherche.trim());
-			} else {
-				dtos = serviceMouvement.listerTout();
-			}
+    public long getNombreTotal() {
+        return serviceMouvement.compter();
+    }
 
-			// Filtrage par compte si sÈlectionnÈ
-			if (compteSelectionne != null && compteSelectionne > 0) {
-				dtos = dtos.stream()
-					.filter(dto -> dto.getIdCompte() == compteSelectionne)
-					.collect(Collectors.toList());
-			}
+    public int getNombreAffiches() {
+        return getListe().size();
+    }
 
-			// Filtrage par pÈriode et montant
-			if (filtreActif) {
-				dtos = dtos.stream()
-					.filter(dto -> {
-						// Filtre de date
-						if (dateDebut != null && dto.getDate().isBefore(dateDebut)) {
-							return false;
-						}
-						if (dateFin != null && dto.getDate().isAfter(dateFin)) {
-							return false;
-						}
-						// Filtre de montant
-						if (montantMin != null && dto.getMontant().compareTo(montantMin) < 0) {
-							return false;
-						}
-						if (montantMax != null && dto.getMontant().compareTo(montantMax) > 0) {
-							return false;
-						}
-						return true;
-					})
-					.collect(Collectors.toList());
-			}
+    public boolean isFiltresActifs() {
+        return (critereRecherche != null && !critereRecherche.trim().isEmpty())
+                || (compteSelectionne != null && compteSelectionne > 0)
+                || (filtreActif && (dateDebut != null || dateFin != null || montantMin != null || montantMax != null));
+    }
 
-			for (DtoMouvement dto : dtos) {
-				liste.add(mapper.map(dto));
-			}
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors du chargement des mouvements : " + e.getMessage());
-			liste = new ArrayList<>();
-		}
-	}
+    public String getNomCompte(Mouvement mouvement) {
+        try {
+            DtoCompte compte = serviceCompte.retrouver(mouvement.getIdCompte());
+            if (compte != null) {
+                return compte.getNom() + " " + (compte.getPrenom() != null ? compte.getPrenom() : "");
+            }
+            return "Compte inconnu";
+        } catch (Exception e) {
+            return "Erreur";
+        }
+    }
 
-	/**
-	 * Charge la liste des comptes disponibles.
-	 */
-	private void chargerComptesDisponibles() {
-		try {
-			comptesDisponibles = new ArrayList<>();
-			List<DtoCompte> dtos = serviceCompte.listerTout();
-			for (DtoCompte dto : dtos) {
-				comptesDisponibles.add(mapper.map(dto));
-			}
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors du chargement des comptes : " + e.getMessage());
-			comptesDisponibles = new ArrayList<>();
-		}
-	}
+    public BigDecimal getTotalAffiches() {
+        return getListe().stream()
+                .map(Mouvement::getMontant)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 
-	//------------------
-	// Initialisations
-	//------------------
+    //-------
+    // Recherche / Filtrage
+    //-------
 
-	public String actualiserCourant() {
-		if (courant != null && courant.getId() != null) {
-			DtoMouvement dto = serviceMouvement.retrouver(courant.getId());
-			if (dto == null) {
-				UtilJsf.messageError("Le mouvement demandÈ n'existe pas.");
-				return "liste";
-			} else {
-				courant = mapper.map(dto);
-			}
-		}
-		return null;
-	}
+    public void rechercher() {
+        liste = null;
+        getListe();
+    }
 
-	//-------
-	// Actions CRUD
-	//-------
+    public void reinitialiserRecherche() {
+        critereRecherche = null;
+        dateDebut = null;
+        dateFin = null;
+        montantMin = null;
+        montantMax = null;
+        filtreActif = false;
+        compteSelectionne = null;
+        liste = null;
+        getListe();
+    }
 
-	public String validerMiseAJour() {
-		try {
-			// Validation de la date
-			if (courant.getDate() == null) {
-				UtilJsf.messageError("La date du mouvement est obligatoire.");
-				return null;
-			}
-
-			// Validation du libellÈ
-			if (courant.getLibelle() == null || courant.getLibelle().trim().isEmpty()) {
-				UtilJsf.messageError("Le libellÈ du mouvement est obligatoire.");
-				return null;
-			}
-
-			// Validation du montant
-			if (courant.getMontant() == null || courant.getMontant().compareTo(BigDecimal.ZERO) <= 0) {
-				UtilJsf.messageError("Le montant du mouvement doit Ítre positif.");
-				return null;
-			}
-
-			// Validation du compte
-			if (courant.getIdCompte() == null || courant.getIdCompte() <= 0) {
-				UtilJsf.messageError("Le compte associÈ au mouvement est obligatoire.");
-				return null;
-			}
-
-			// Insertion ou modification du mouvement
-			if (courant.getId() == null) {
-				serviceMouvement.inserer(mapper.map(courant));
-				UtilJsf.messageInfo("Mouvement crÈÈ avec succËs !");
-			} else {
-				serviceMouvement.modifier(mapper.map(courant));
-				UtilJsf.messageInfo("Mouvement modifiÈ avec succËs !");
-			}
-
-			// Invalide le cache local pour reflÈter les changements
-			liste = null;
-			return "liste";
-
-		} catch (ExceptionValidation e) {
-			UtilJsf.messageError(e.getMessage());
-			return null;
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors de l'enregistrement : " + e.getMessage());
-			return null;
-		}
-	}
-
-	public String supprimer(Mouvement item) {
-		try {
-			serviceMouvement.supprimer(item.getId());
-			if (liste != null) {
-				liste.remove(item);
-			}
-			UtilJsf.messageInfo("Mouvement supprimÈ avec succËs !");
-		} catch (ExceptionValidation e) {
-			UtilJsf.messageError(e.getMessage());
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors de la suppression : " + e.getMessage());
-		}
-		return null;
-	}
-
-	//-------
-	// Recherche / Filtrage
-	//-------
-
-	/**
-	 * Lance une recherche par libellÈ.
-	 */
-	public void rechercher() {
-		liste = null;
-		getListe();
-	}
-
-	/**
-	 * RÈinitialise tous les critËres de recherche et de filtrage.
-	 */
-	public void reinitialiserRecherche() {
-		critereRecherche = null;
-		dateDebut = null;
-		dateFin = null;
-		montantMin = null;
-		montantMax = null;
-		compteSelectionne = null;
-		filtreActif = false;
-		liste = null;
-		getListe();
-	}
-
-	/**
-	 * Active/dÈsactive le filtre par pÈriode et montant.
-	 */
-	public void toggleFiltre() {
-		filtreActif = !filtreActif;
-		liste = null;
-		getListe();
-	}
-
-	//-------
-	// MÈthodes utilitaires
-	//-------
-
-	/**
-	 * Retourne le nombre total de mouvements.
-	 */
-	public long getNombreTotal() {
-		return serviceMouvement.compter();
-	}
-
-	/**
-	 * Retourne le nombre de mouvements affichÈs (aprËs filtrage).
-	 */
-	public int getNombreAffiches() {
-		return getListe().size();
-	}
-
-	/**
-	 * VÈrifie si des filtres sont actifs.
-	 * IMPORTANT: Cette mÈthode doit Ítre nommÈe isFiltresActifs() pour respecter la convention JavaBeans
-	 * et permettre l'utilisation dans les expressions EL JSF comme #{modelMouvement.filtresActifs}
-	 */
-	public boolean isFiltresActifs() {
-		return (critereRecherche != null && !critereRecherche.trim().isEmpty())
-			|| (compteSelectionne != null && compteSelectionne > 0)
-			|| (filtreActif && (dateDebut != null || dateFin != null || montantMin != null || montantMax != null));
-	}
-
-	/**
-	 * Retourne le nom du compte associÈ ‡ un mouvement pour l'affichage.
-	 */
-	public String getNomCompte(Mouvement mouvement) {
-		try {
-			DtoCompte compte = serviceCompte.retrouver(mouvement.getIdCompte());
-			if (compte != null) {
-				return compte.getNom() + " " + (compte.getPrenom() != null ? compte.getPrenom() : "");
-			}
-			return "Compte inconnu";
-		} catch (Exception e) {
-			return "Erreur";
-		}
-	}
-
-	/**
-	 * Calcule le total des mouvements affichÈs.
-	 */
-	public BigDecimal getTotalAffiches() {
-		return getListe().stream()
-			.map(Mouvement::getMontant)
-			.reduce(BigDecimal.ZERO, BigDecimal::add);
-	}
+    public void toggleFiltre() {
+        filtreActif = !filtreActif;
+        liste = null;
+        getListe();
+    }
 }

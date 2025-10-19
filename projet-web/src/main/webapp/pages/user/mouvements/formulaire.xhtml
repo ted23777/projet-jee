@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/template/page-standard.xhtml">
+
+    <!-- ⚡ Initialisation avant rendu -->
+    <f:metadata>
+        <!-- 1️ Mettre le compte actif dans modelCompte -->
+        <f:viewAction action="#{modelCompte.setCourant(compteActif)}" />
+
+        <!-- 2️ Créer et associer un mouvement avec ce compte -->
+        <f:viewAction action="#{modelMouvement.initialiserMouvement(modelCompte.courant)}" />
+
+        <!-- 3️ Si id en paramètre → charger le mouvement existant -->
+        <f:viewParam name="id" value="#{modelMouvement.courant.id}" />
+        <f:viewAction action="#{modelMouvement.actualiserCourant()}" />
+    </f:metadata>
+
+    <!-- 🏷️ Titre dynamique sécurisé -->
+    <ui:define name="titre">
+        #{empty modelMouvement.courant or empty modelMouvement.courant.id 
+            ? 'Nouveau mouvement' 
+            : 'Modifier le mouvement'}
+    </ui:define>
+
+    <ui:define name="contenu">
+
+        <h2>
+            #{empty modelMouvement.courant or empty modelMouvement.courant.id 
+                ? 'Créer un nouveau mouvement financier' 
+                : 'Modifier le mouvement financier'}
+        </h2>
+
+        <div class="form-help">
+            <p>
+                Un mouvement financier représente une transaction liée à votre compte bancaire.
+                Renseignez la date, le libellé descriptif et le montant de la transaction.
+            </p>
+        </div>
+
+        <br />
+
+        <h:form styleClass="form-container">
+            <fieldset class="form-fieldset">
+                <legend>Informations du mouvement</legend>
+
+                <table class="form">
+
+                    <!-- ID (readonly) -->
+                    <tr rendered="#{not empty modelMouvement.courant.id}">
+                        <td class="form-label">
+                            <h:outputLabel for="id" value="Identifiant :" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputText id="id"
+                                         value="#{modelMouvement.courant.id}"
+                                         size="10"
+                                         readonly="true"
+                                         styleClass="readonly-input" />
+                            <br />
+                            <h:message for="id" errorClass="error" />
+                        </td>
+                    </tr>
+
+                    <!-- Date -->
+                    <tr>
+                        <td class="form-label">
+                            <h:outputLabel for="date" value="Date du mouvement :" styleClass="required-field" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputText id="date"
+                                         value="#{modelMouvement.courant.date}"
+                                         type="date"
+                                         required="true"
+                                         requiredMessage="La date du mouvement est obligatoire"
+                                         styleClass="date-input">
+                                <f:convertDateTime pattern="yyyy-MM-dd" type="localDate" />
+                            </h:inputText>
+                            <br />
+                            <span class="field-hint">Sélectionnez la date à laquelle le mouvement a eu lieu</span>
+                            <br />
+                            <h:message for="date" errorClass="error" />
+                        </td>
+                    </tr>
+
+                    <!-- Libellé -->
+                    <tr>
+                        <td class="form-label">
+                            <h:outputLabel for="libelle" value="Libellé :" styleClass="required-field" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputText id="libelle"
+                                         value="#{modelMouvement.courant.libelle}"
+                                         size="50"
+                                         maxlength="50"
+                                         required="true"
+                                         requiredMessage="Le libellé du mouvement est obligatoire"
+                                         styleClass="text-input"
+                                         placeholder="Ex: Paiement facture électricité, Virement salaire..." />
+                            <br />
+                            <span class="field-hint">Description du mouvement (max 50 caractères)</span>
+                            <br />
+                            <h:message for="libelle" errorClass="error" />
+                        </td>
+                    </tr>
+
+                    <!-- Montant -->
+                    <tr>
+                        <td class="form-label">
+                            <h:outputLabel for="montant" value="Montant (€) :" styleClass="required-field" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputText id="montant"
+                                         value="#{modelMouvement.courant.montant}"
+                                         size="15"
+                                         required="true"
+                                         requiredMessage="Le montant du mouvement est obligatoire"
+                                         styleClass="number-input">
+                                <f:convertNumber type="currency" currencySymbol="" minFractionDigits="2" maxFractionDigits="2" />
+                            </h:inputText>
+                            <br />
+                            <span class="field-hint">Montant en euros (ex: 150.75)</span>
+                            <br />
+                            <h:message for="montant" errorClass="error" />
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <br />
+
+            <!-- Boutons d'action -->
+            <div class="form-actions">
+                <h:commandButton action="#{modelMouvement.validerMiseAJour()}"
+                                 value="#{empty modelMouvement.courant.id ? 'Créer le mouvement' : 'Enregistrer les modifications'}"
+                                 styleClass="btn btn-primary btn-large" />
+
+                <h:button outcome="liste"
+                          value="Annuler"
+                          styleClass="btn btn-secondary btn-large" />
+            </div>
+
+            <br />
+
+            <div class="context-help">
+                <h4>Aide</h4>
+                <ul>
+                    <li><strong>Date :</strong> Indiquez la date réelle de la transaction</li>
+                    <li><strong>Libellé :</strong> Décrivez clairement la nature du mouvement</li>
+                    <li><strong>Montant :</strong> Montant positif (les débits/crédits sont gérés ailleurs)</li>
+                </ul>
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
+</html>

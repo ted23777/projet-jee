@@ -40,6 +40,35 @@
    <from-outcome>statistiques</from-outcome>
    <to-view-id>/pages/admin/statistiques/liste.xhtml</to-view-id>
   </navigation-case>
+  <navigation-case>
+   <from-outcome>home</from-outcome>
+   <to-view-id>/pages/user/home.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>mesMouvements</from-outcome>
+   <to-view-id>/pages/user/mouvements/liste.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>mesCultures</from-outcome>
+   <to-view-id>/pages/user/cultures/liste.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>mesParcelles</from-outcome>
+   <to-view-id>/pages/user/parcelles/liste.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>monCompte</from-outcome>
+   <to-view-id>/pages/user/compte/formulaire.xhtml</to-view-id>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>inscription</from-outcome>
+   <to-view-id>/inscription.xhtml</to-view-id>
+   <redirect/>
+  </navigation-case>
+  <navigation-case>
+   <from-outcome>parcellesDisponibles</from-outcome>
+   <to-view-id>/pages/user/parcelles/disponibles.xhtml</to-view-id>
+  </navigation-case>
  </navigation-rule>
  <application/>
 </faces-config>

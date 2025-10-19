@@ -15,4 +15,6 @@ public interface IDaoParcelle {
     Parcelle retrouver(int idParcelle);
 
     List<Parcelle> listerTout();
+
+	List<Parcelle> listerParIdCompte(int idCompte);
 }

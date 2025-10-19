@@ -48,4 +48,12 @@ public class DaoParcelle implements IDaoParcelle {
         var query = em.createQuery(jpql, Parcelle.class);
         return query.getResultList();
     }
+    
+    @Override
+    public List<Parcelle> listerParIdCompte(int idCompte) {
+        var jpql = "SELECT p FROM Parcelle p WHERE p.compte.id = :idCompte ORDER BY p.id";
+        var query = em.createQuery(jpql, Parcelle.class);
+        query.setParameter("idCompte", idCompte);
+        return query.getResultList();
+    }
 }

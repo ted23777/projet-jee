@@ -1,79 +1,52 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<ui:composition template="/template/page-standard.xhtml"
-     xmlns="http://www.w3.org/1999/xhtml"
-     xmlns:h="http://java.sun.com/jsf/html"
-     xmlns:f="http://java.sun.com/jsf/core"
-     xmlns:ui="http://java.sun.com/jsf/facelets">>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-	 <f:metadata>
-		 <f:viewParam name="id" value="#{modelCompte.courant.id}" />
-		 <f:viewAction action="#{modelCompte.actualiserCourant()}" />
-	 </f:metadata>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:define name="titre">Compte</ui:define>
-
+<ui:composition template="/template/page-standard.xhtml">
+    <ui:define name="titre">
+        Culture
+    </ui:define>
     <ui:define name="contenu">
-
-	<h:form>
-	
-		<table class="form">
-			<tr>
-				<td>
-					<h:outputLabel for="id">Id :</h:outputLabel>				
-				</td>
-				<td>
-					<h:inputText id="id" size="5" readonly="true"
-						value="#{modelCompte.courant.id}" />
-					<br /><h:message for="id" errorClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h:outputLabel for="pseudo">Pseudo :</h:outputLabel>				
-				</td>
-				<td>
-					<h:inputText id="pseudo" size="25" 
-						value="#{modelCompte.courant.pseudo}" />
-					<br /><h:message for="pseudo" errorClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h:outputLabel for="motDePasse">Mot de passe :</h:outputLabel>				
-				</td>
-				<td>
-					<h:inputText id="motDePasse" size="25" 
-						value="#{modelCompte.courant.motDePasse}" />
-					<br /><h:message for="motDePasse" errorClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h:outputLabel for="email">Email :</h:outputLabel>				
-				</td>
-				<td>
-					<h:inputText id="email" size="50" 
-						value="#{modelCompte.courant.email}" />
-					<br /><h:message for="email" errorClass="error"/>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<h:outputLabel for="admin">Admin :</h:outputLabel>				
-				</td>
-				<td>
-					<h:selectBooleanCheckbox value="#{modelCompte.courant.flagAdmin}" />
-					<h:message for="admiin" errorClass="error"/>
-				</td>
-			</tr>
-		</table>
-
-		<br /> 
-		<h:commandButton value="Valider" 
-			action="#{modelCompte.validerMiseAJour()}" />
-		<h:button value="Retour" outcome="comptes" />
-	</h:form>
-
-	</ui:define>
-
+        <h2>#{modelCulture.courant.id == null ? 'Nouvelle culture' : 'Modifier la culture'}</h2>
+        <h:form>
+            <table class="form">
+                <tr>
+                    <td><h:outputLabel for="id">Id :</h:outputLabel></td>
+                    <td>
+                        <h:inputText id="id" size="5" readonly="true"
+                                     value="#{modelCulture.courant.id}" /> 
+                        <br /> 
+                        <h:message for="id" errorClass="error" />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td><h:outputLabel for="nom">Nom de la culture :</h:outputLabel></td>
+                    <td>
+                        <h:inputText id="nom" size="50"
+                                     value="#{modelCulture.courant.nom}" 
+                                     required="true"
+                                     requiredMessage="Le nom de la culture est obligatoire" /> 
+                        <br /> 
+                        <h:message for="nom" errorClass="error" />
+                    </td>
+                </tr>
+            </table>
+            
+            <br />
+            <h:commandButton action="#{modelCulture.validerMiseAJour}"
+                             value="Valider" />
+            <h:button outcome="liste" value="Annuler" />
+        </h:form>
+    </ui:define>
+    
+    <f:metadata>
+        <f:viewParam name="id" value="#{modelCulture.courant.id}" />
+        <f:viewAction action="#{modelCulture.actualiserCourant}" />
+    </f:metadata>
 </ui:composition>
+</html>

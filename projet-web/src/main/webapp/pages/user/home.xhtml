@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/template/page-standard.xhtml">
+	<ui:define name="titre">
+        Accueil
+    </ui:define>
+	<ui:define name="contenu">
+		<h2>Bienvenue sur votre espace personnel</h2>
+
+		<div class="info-panel">
+			<p>
+				Bienvenue <strong>#{compteActif.nom} #{compteActif.prenom}
+				</strong> ! Gérez vos parcelles, cultures, mouvements financiers et
+				réservations depuis cet espace.
+			</p>
+		</div>
+
+		<br />
+
+		<!-- Grille de navigation principale -->
+		<!-- Card Mes Mouvements -->
+		<div class="dashboard-card">
+			<h3>Mes Mouvements Financiers</h3>
+			<p>Consultez et gérez l'historique de vos transactions
+				financiares.</p>
+			<div class="card-actions">
+				<h:form>
+					<h:commandButton outcome="mesMouvements" value="Accéder"
+						styleClass="btn btn-primary" />
+				</h:form>
+			</div>
+		</div>
+
+		<!-- Card Mes Cultures -->
+		<div class="dashboard-card">
+			<h3>Mes Cultures</h3>
+			<p>Gérez vos cultures, suivez les semis et les récoltes prévues.</p>
+			<div class="card-actions">
+				<h:form>
+					<h:commandButton outcome="mesCultures" value="Accéder"
+						styleClass="btn btn-primary" />
+				</h:form>
+			</div>
+		</div>
+
+		<!-- Card Mes Parcelles -->
+		<div class="dashboard-card">
+			<h3>Mes Parcelles</h3>
+			<p>Consultez et gérez vos parcelles et leurs caractéristiques.</p>
+			<div class="card-actions">
+				<h:form>
+					<h:commandButton outcome="mesParcelles" value="Accéder"
+						styleClass="btn btn-primary" />
+				</h:form>
+			</div>
+		</div>
+
+		<!-- Card Mes Réservations -->
+		<div class="dashboard-card">
+			<h3>Mes Réservations et Paiements</h3>
+			<p>Suivez vos réservations et l'historique de vos paiements.</p>
+			<div class="card-actions">
+				<h:form>
+					<h:commandButton outcome="mesReservations" value="Accéder"
+						styleClass="btn btn-primary" />
+				</h:form>
+			</div>
+		</div>
+
+		<!-- Card Mon Compte -->
+		<div class="dashboard-card">
+			<h3>Mon Compte</h3>
+			<p>Gérez vos informations personnelles et paramètres de compte.</p>
+			<div class="card-actions">
+				<h:form>
+					<h:commandButton outcome="monCompte" value="Accéder"
+						styleClass="btn btn-primary" />
+				</h:form>
+			</div>
+		</div>
+
+		<br />
+
+		<!-- Section d'aide -->
+		<div class="help-panel">
+			<h4>Aide</h4>
+			<ul>
+				<li><strong>Navigation :</strong> Utilisez les cartes ci-dessus
+					pour accéder aux différentes sections</li>
+				<li><strong>Mouvements :</strong> Suivez toutes vos
+					transactions financières en temps réel</li>
+				<li><strong>Cultures :</strong> Planifiez et suivez l'évolution
+					de vos cultures</li>
+				<li><strong>Parcelles :</strong> Gérez la répartition et
+					l'utilisation de vos terrains</li>
+			</ul>
+		</div>
+	</ui:define>
+</ui:composition>
+</html>
