@@ -5,16 +5,16 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
 
 import projet.ejb.dao.IDaoCulture;
 import projet.ejb.data.Culture;
 
 @Stateless
 @Local
-@TransactionAttribute
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class DaoCulture implements IDaoCulture {
 
     @PersistenceContext
@@ -34,7 +34,10 @@ public class DaoCulture implements IDaoCulture {
 
     @Override
     public void supprimer(int idCulture) {
-        em.remove(retrouver(idCulture));
+        var culture = retrouver(idCulture);
+        if (culture != null) {
+            em.remove(culture);
+        }
     }
 
     @Override
@@ -48,36 +51,39 @@ public class DaoCulture implements IDaoCulture {
         var query = em.createQuery(jpql, Culture.class);
         return query.getResultList();
     }
-    
+
     @Override
     public List<Culture> rechercherParNom(String nom) {
-        String crit = (nom == null) ? "" : nom.trim().toLowerCase();
+        var crit = (nom == null) ? "" : nom.trim().toLowerCase();
         if (crit.isEmpty()) {
             return listerTout();
         }
-        TypedQuery<Culture> query =
-            em.createNamedQuery("Culture.findByNom", Culture.class);
-        query.setParameter("pattern", "%" + crit + "%"); // ici pattern
+
+        var jpql = "SELECT c FROM Culture c WHERE LOWER(c.nom) LIKE :pattern ORDER BY c.nom ASC";
+        var query = em.createQuery(jpql, Culture.class);
+        query.setParameter("pattern", "%" + crit + "%");
         return query.getResultList();
     }
 
-
     @Override
     public long compter() {
-        return em.createNamedQuery("Culture.count", Long.class)
-                 .getSingleResult();
+        var jpql = "SELECT COUNT(c) FROM Culture c";
+        var query = em.createQuery(jpql, Long.class);
+        return query.getSingleResult();
     }
 
     @Override
     public boolean nomExiste(String nom, int idCulture) {
-        String crit = (nom == null) ? "" : nom.trim();
+        var crit = (nom == null) ? "" : nom.trim().toLowerCase();
+        var jpql = "SELECT COUNT(c) FROM Culture c " +
+                   "WHERE LOWER(c.nom) = :nom " +
+                   "AND (:idCulture = 0 OR c.id <> :idCulture)";
 
-        Long count = em.createNamedQuery("Culture.existsByNom", Long.class)
-                       .setParameter("nom", crit)
-                       .setParameter("idCulture", idCulture)
-                       .getSingleResult();
+        var query = em.createQuery(jpql, Long.class);
+        query.setParameter("nom", crit);
+        query.setParameter("idCulture", idCulture);
 
-        return count != null && count > 0;
+        var count = query.getSingleResult();
+        return count > 0;
     }
-
 }

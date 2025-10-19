@@ -51,4 +51,27 @@ public class DaoContenir implements IDaoContenir {
         var query = em.createQuery(jpql, Contenir.class);
         return query.getResultList();
     }
+
+	@Override
+	public List<Contenir> listerParParcelle(int idParcelle) {
+		var jpql = "SELECT c FROM Contenir c WHERE c.idParcelle = :idParcelle";
+		var query = em.createQuery(jpql, Contenir.class);
+		query.setParameter("idParcelle", idParcelle);
+		return query.getResultList();
+	}
+
+	@Override
+	public List<Contenir> listerParCulture(int idCulture) {
+		var jpql = "SELECT c FROM Contenir c WHERE c.idCulture = :idCulture";
+		var query = em.createQuery(jpql, Contenir.class);
+		query.setParameter("idCulture", idCulture);
+		return query.getResultList();
+	}
+
+	@Override
+	public long compter() {
+		var jpql = "SELECT COUNT(c) FROM Contenir c";
+		var query = em.createQuery(jpql, Long.class);
+		return query.getSingleResult();
+	}
 }

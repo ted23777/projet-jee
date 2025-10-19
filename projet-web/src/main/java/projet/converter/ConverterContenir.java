@@ -30,8 +30,14 @@ public class ConverterContenir implements Converter<Contenir> {
             }
         }
 
-        var idParcelle = Integer.valueOf(value);  // Exemples de conversion des valeurs pour `Contenir`
-        var idCulture = Integer.valueOf(value);
+        // Découper la valeur "idParcelle-idCulture"
+        String[] parts = value.split("-");
+        if (parts.length != 2) {
+            return null;
+        }
+        
+        var idParcelle = Integer.valueOf(parts[0]);  // Exemples de conversion des valeurs pour `Contenir`
+        var idCulture = Integer.valueOf(parts[0]);
         for (Contenir item : items) {
             if (item.getIdParcelle().equals(idParcelle) && item.getIdCulture().equals(idCulture)) {
                 return item;

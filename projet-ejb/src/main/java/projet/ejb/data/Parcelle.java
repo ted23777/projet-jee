@@ -2,13 +2,10 @@ package projet.ejb.data;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "parcelle")
@@ -33,44 +30,42 @@ public class Parcelle {
     @JoinColumn(name = "idcompte")
     private Compte compte;
 
+    // Relation correcte : Une parcelle peut contenir plusieurs "Contenir"
+    @OneToMany(mappedBy = "parcelle", cascade = CascadeType.ALL)
+    private List<Contenir> contenirs = new ArrayList<>();
+
+    //-------
+    // Constructeurs
+    //-------
+
+    public Parcelle() {}
+
+    public Parcelle(Double surface, Boolean libre) {
+        this.surface = surface;
+        this.libre = libre;
+    }
+
     //-------
     // Getters & Setters
     //-------
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public Double getSurface() { return surface; }
+    public void setSurface(Double surface) { this.surface = surface; }
 
-    public Double getSurface() {
-        return surface;
-    }
+    public Boolean getLibre() { return libre; }
+    public void setLibre(Boolean libre) { this.libre = libre; }
 
-    public void setSurface(Double surface) {
-        this.surface = surface;
-    }
+    public Compte getCompte() { return compte; }
+    public void setCompte(Compte compte) { this.compte = compte; }
 
-    public Boolean getLibre() {
-        return libre;
-    }
-
-    public void setLibre(Boolean libre) {
-        this.libre = libre;
-    }
-
-    public Compte getCompte() {
-        return compte;
-    }
-
-    public void setCompte(Compte compte) {
-        this.compte = compte;
-    }
+    public List<Contenir> getContenirs() { return contenirs; }
+    public void setContenirs(List<Contenir> contenirs) { this.contenirs = contenirs; }
 
     //-------
-    // equals() et hashcode()
+    // equals() et hashCode()
     //-------
 
     @Override
@@ -90,8 +85,6 @@ public class Parcelle {
         if (getClass() != obj.getClass())
             return false;
         Parcelle other = (Parcelle) obj;
-        if (id != other.id)
-            return false;
-        return true;
+        return id == other.id;
     }
 }

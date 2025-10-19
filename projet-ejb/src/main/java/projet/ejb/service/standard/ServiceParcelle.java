@@ -11,6 +11,7 @@ import javax.ejb.TransactionAttribute;
 import javax.inject.Inject;
 
 import projet.commun.dto.DtoParcelle;
+import projet.commun.exception.ExceptionValidation;
 import projet.commun.service.IServiceParcelle;
 import projet.ejb.dao.IDaoParcelle;
 import projet.ejb.data.Parcelle;
@@ -66,5 +67,41 @@ public class ServiceParcelle implements IServiceParcelle {
             liste.add(mapper.map(Parcelle));
         }
         return liste;
+    }
+
+    @Override
+    @TransactionAttribute(NOT_SUPPORTED)
+    public List<DtoParcelle> listerParCompte(int idCompte) {
+        List<DtoParcelle> liste = new ArrayList<>();
+        for (Parcelle parcelle : daoParcelle.listerParCompte(idCompte)) {
+            liste.add(mapper.map(parcelle));
+        }
+        return liste;
+    }
+    
+    @Override
+    @TransactionAttribute(NOT_SUPPORTED)
+    public List<DtoParcelle> listerLibres() {
+        List<DtoParcelle> liste = new ArrayList<>();
+        for (Parcelle parcelle : daoParcelle.listerLibres()) {
+            liste.add(mapper.map(parcelle));
+        }
+        return liste;
+    }
+     
+    
+    //-------
+    // Méthodes privées
+    //-------
+    private void valider(DtoParcelle dto) throws ExceptionValidation {
+        if (dto == null) {
+            throw new ExceptionValidation("Les données sont obligatoires.");
+        }
+        if (dto.getSurface() == null || dto.getSurface() <= 0) {
+            throw new ExceptionValidation("La surface doit être supérieure à 0.");
+        }
+        if (dto.getLibre() == null) {
+            throw new ExceptionValidation("Le statut libre/occupé est obligatoire.");
+        }
     }
 }

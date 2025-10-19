@@ -50,11 +50,11 @@ VALUES
 -- Insertion dans la table contenir
 INSERT INTO contenir(idParcelle, idCulture, part)
 VALUES
-(1, 1, 0.60),
-(1, 2, 0.40),
-(2, 3, 1.00),
-(3, 4, 0.75),
-(4, 1, 0.25);
+(1, 1, 60),
+(1, 2, 40),
+(2, 3, 100),
+(3, 4, 75),
+(4, 1, 25);
 
 -- Insertion dans la table concerner
 INSERT INTO concerner(idCulture, idEntretien)

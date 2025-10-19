@@ -2,6 +2,7 @@ package projet.commun.service;
 
 import java.util.List;
 
+
 import projet.commun.dto.DtoParcelle;
 import projet.commun.exception.ExceptionValidation;
 
@@ -17,4 +18,8 @@ public interface IServiceParcelle {
     DtoParcelle retrouver(int idParcelle);
 
     List<DtoParcelle> listerTout();
+    
+    List<DtoParcelle> listerParCompte(int idCompte);  
+    
+    List<DtoParcelle> listerLibres();
 }

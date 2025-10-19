@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/template/page-standard.xhtml">
+
+  <ui:define name="titre">Cultures de la parcelle</ui:define>
+
+  <ui:define name="contenu">
+
+    <!-- Récup paramètre et préchargement -->
+    <f:metadata>
+      <f:viewParam name="idParcelle" value="#{modelContenir.idParcelle}" />
+      <f:viewAction action="#{modelContenir.actualiserPourParcelle}" />
+    </f:metadata>
+
+    <h2>Gestion des cultures pour la parcelle</h2>
+
+    <h:panelGroup rendered="#{not empty modelContenir.nomParcelleSelectionnee}">
+      <h3>
+        Parcelle :
+        <h:outputText value="#{modelContenir.nomParcelleSelectionnee}" />
+        — Surface : <h:outputText value="#{modelContenir.surfaceParcelleSelectionnee}">
+          <f:convertNumber maxFractionDigits="2" />
+        </h:outputText> m²
+      </h3>
+      <p>
+        Occupation actuelle :
+        <h:outputText value="#{modelContenir.partOccupeePourcent}">
+          <f:convertNumber maxFractionDigits="2" />
+        </h:outputText> %
+        &nbsp;|&nbsp; Restant :
+        <strong>
+          <h:outputText value="#{modelContenir.partRestantePourcent}">
+            <f:convertNumber maxFractionDigits="2" />
+          </h:outputText>%</strong>
+      </p>
+    </h:panelGroup>
+
+    <h:form id="form">
+      <h:messages globalOnly="true" styleClass="msg-global" />
+
+      <!-- TABLEAU -->
+      <h:dataTable value="#{modelContenir.listePourParcelle}"
+                   var="item"
+                   rendered="#{not empty modelContenir.listePourParcelle}"
+                   styleClass="liste"
+                   rowClasses="impair, pair"
+                   columnClasses="left,center,center,center">
+
+        <h:column>
+          <f:facet name="header"><h:outputText value="Culture" /></f:facet>
+          <h:outputText value="#{modelContenir.getNomCulture(item.idCulture)}" />
+        </h:column>
+
+        <h:column>
+          <f:facet name="header"><h:outputText value="Part (%)" /></f:facet>
+          <h:outputText value="#{item.part * 100}">
+            <f:convertNumber maxFractionDigits="2" />
+          </h:outputText>
+        </h:column>
+
+        <h:column>
+          <f:facet name="header"><h:outputText value="Part restante (parcelle)" /></f:facet>
+          <h:outputText value="#{modelContenir.partRestantePourcent}">
+            <f:convertNumber maxFractionDigits="2" />
+          </h:outputText>%
+        </h:column>
+
+        <h:column>
+          <f:facet name="header"><h:outputText value="Actions" /></f:facet>
+
+          <!-- Modifier : passe la PK composite en paramètres -->
+          <h:link outcome="formulaire">
+            <f:param name="idParcelle" value="#{item.idParcelle}" />
+            <f:param name="idCulture"  value="#{item.idCulture}" />
+            <h:graphicImage library="images" name="modifier.png"
+                            title="Modifier" styleClass="image-action"/>
+          </h:link>
+
+          <!-- Supprimer : appelle l’action avec la PK composite -->
+          <h:commandButton title="Supprimer"
+                           action="#{modelContenir.supprimer(item.idParcelle, item.idCulture)}"
+                           onclick="return confirm('Supprimer cette culture ?')"
+                           styleClass="image-action">
+            <h:graphicImage library="images" name="supprimer.png"/>
+          </h:commandButton>
+        </h:column>
+      </h:dataTable>
+
+      <br/>
+
+      <!-- BLOC AJOUT DIRECT -->
+      <h3>Ajouter une culture sur cette parcelle</h3>
+
+      <h:panelGroup layout="block" styleClass="panel-ajout">
+
+        <h:panelGroup rendered="#{modelContenir.parcellePleine}">
+          <h:panelGroup styleClass="alert alert-warning">
+            La parcelle est pleine : vous ne pouvez plus ajouter de culture.
+          </h:panelGroup>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{not modelContenir.parcellePleine}">
+          <h:panelGrid columns="4" columnClasses="left,left,left,left" styleClass="grid-ajout">
+
+            <h:outputLabel for="culture" value="Culture :" />
+            <h:selectOneMenu id="culture" value="#{modelContenir.idCultureAAjouter}" required="true">
+              <f:selectItem itemLabel="-- choisir --" noSelectionOption="true" />
+              <f:selectItems value="#{modelContenir.culturesSelectItems}" />
+            </h:selectOneMenu>
+            <h:message for="culture" />
+
+            <h:outputLabel for="part" value="Part (%) :" />
+            <h:inputText id="part" value="#{modelContenir.partAAjouterPourcent}" required="true">
+              <!-- On saisit en % côté UI, on convertira côté bean en décimal -->
+              <f:convertNumber maxFractionDigits="2" />
+            </h:inputText>
+            <h:message for="part" />
+
+          </h:panelGrid>
+
+          <h:commandButton value="Ajouter"
+                           action="#{modelContenir.ajouterCulturePourParcelle}"
+                           styleClass="btn btn-success" />
+        </h:panelGroup>
+
+      </h:panelGroup>
+
+      <br/>
+      <h:link outcome="liste" value="Retour à la liste des parcelles-cultures" />
+
+    </h:form>
+  </ui:define>
+</ui:composition>
+</html>

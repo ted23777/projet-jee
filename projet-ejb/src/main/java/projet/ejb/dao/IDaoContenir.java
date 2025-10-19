@@ -6,13 +6,21 @@ import projet.ejb.data.Contenir;
 
 public interface IDaoContenir {
 
-    void inserer(Contenir contenir);
+	 	void inserer(Contenir contenir);
 
-    void modifier(Contenir contenir);
+	    void modifier(Contenir contenir);
 
-    void supprimer(int idParcelle, int idCulture);
+	    void supprimer(int idParcelle, int idCulture);
 
-    Contenir retrouver(int idParcelle, int idCulture);
+	    Contenir retrouver(int idParcelle, int idCulture);
 
-    List<Contenir> listerTout();
+	    List<Contenir> listerTout();
+
+	    List<Contenir> listerParParcelle(int idParcelle);
+
+	    List<Contenir> listerParCulture(int idCulture);
+
+	    long compter();
+	    
+	        
 }

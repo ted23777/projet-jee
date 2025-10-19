@@ -6,7 +6,7 @@ import projet.ejb.data.Culture;
 
 public interface IDaoCulture {
 
-    int inserer(Culture culture);
+	int inserer(Culture culture);
 
     void modifier(Culture culture);
 
@@ -15,10 +15,10 @@ public interface IDaoCulture {
     Culture retrouver(int idCulture);
 
     List<Culture> listerTout();
-    
+
     List<Culture> rechercherParNom(String nom);
-    
+
     long compter();
-    
+
     boolean nomExiste(String nom, int idCulture);
 }

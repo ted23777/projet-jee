@@ -15,8 +15,18 @@ public class Contenir implements Serializable {
     private Integer idCulture;
 
     private Double part;
+    
+    public Contenir() {
+    	
+    }
 
-    //-------
+    public Contenir(Integer idParcelle, Integer idCulture, Double part) {
+		this.idParcelle = idParcelle;
+		this.idCulture = idCulture;
+		this.part = part;
+	}
+
+	//-------
     // Getters & Setters
     //-------
 

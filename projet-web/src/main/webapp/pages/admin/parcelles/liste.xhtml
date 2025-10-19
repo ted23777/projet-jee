@@ -5,56 +5,84 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <ui:composition template="/template/page-standard.xhtml">
-  <ui:define name="titre">Parcelles</ui:define>
 
-  <ui:define name="contenu">
-    <h2>Catalogue des parcelles</h2>
+    <ui:define name="titre">Parcelles et leurs cultures</ui:define>
 
-    <h:form>
-      <h:panelGroup rendered="#{empty modelParcelle.liste}">
-        <h4>Aucune parcelle disponible.</h4>
-      </h:panelGroup>
+    <ui:define name="contenu">
 
-      <h:dataTable styleClass="liste" value="#{modelParcelle.liste}" var="item"
-                   rowClasses="impair, pair" columnClasses="center,left,center"
-                   rendered="#{not empty modelParcelle.liste}">
-        <h:column>
-          <f:facet name="header"><h:outputText value="Id"/></f:facet>
-          #{item.id}
-        </h:column>
+        <h2>Liste des parcelles et des cultures qu’elles abritent</h2>
 
-        <h:column>
-          <f:facet name="header"><h:outputText value="Surface (m²)"/></f:facet>
-          #{item.surface}
-        </h:column>
+        <!-- Formulaire principal -->
+        <h:form>
+            <!-- Message si aucune donnée -->
+            <h:panelGroup rendered="#{empty modelContenir.liste}">
+                <h4>Aucune association parcelle-culture trouvée.</h4>
+            </h:panelGroup>
 
-        <h:column>
-          <f:facet name="header"><h:outputText value="Libre ?"/></f:facet>
-          <h:outputText value="#{item.libre ? 'Oui' : 'Non'}"/>
-        </h:column>
+            <!-- Tableau principal -->
+            <h:dataTable value="#{modelContenir.liste}" var="item"
+                         rendered="#{not empty modelContenir.liste}"
+                         styleClass="liste"
+                         rowClasses="impair, pair"
+                         columnClasses="center,left,center,center">
 
-        <!--  <h:column>
-          <f:facet name="header"><h:outputText value="Compte"/></f:facet>
-          <h:outputText value="#{empty item.comptePseudo ? (empty item.idCompte ? '-' : item.idCompte) : item.comptePseudo}"/>
-        </h:column> -->
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Parcelle" />
+                    </f:facet>
+                    <h:outputText value="#{modelContenir.getNomParcelle(item.idParcelle)}" />
+                </h:column>
 
-        <h:column>
-					<f:facet name="header">
-						<h:outputText value="Actions" />
-					</f:facet>
-					<h:button outcome="formulaire?id=#{item.id}"
-						image="#{ resource['images:modifier.png'] }" title="Modifier"
-						styleClass="image-action" />
-					<h:commandButton action="#{modelParcelle.supprimer(item.id)}"
-						onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
-						image="#{ resource['images:supprimer.png'] }" title="Supprimer"
-						styleClass="image-action" />
-				</h:column>
-      </h:dataTable>
-    </h:form>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Culture" />
+                    </f:facet>
+                    <h:outputText value="#{modelContenir.getNomCulture(item.idCulture)}" />
+                </h:column>
 
-    <br/>
-    <h:button value="Ajouter une parcelle" outcome="formulaire"/>
-  </ui:define>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Part" />
+                    </f:facet>
+                    <h:outputText value="#{item.part}%">
+                        <f:convertNumber type="number" maxFractionDigits="2" />
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Part restante sur la parcelle" />
+                    </f:facet>
+                    <h:outputText value="#{modelContenir.getPartRestante(item.idParcelle)}%">
+                        <f:convertNumber type="number" maxFractionDigits="2" />
+                    </h:outputText>
+                </h:column>
+
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Actions" />
+                    </f:facet>
+                    <h:button outcome="formulaire?id=#{item.idParcelle}"
+                              image="#{resource['images:modifier.png']}"
+                              title="Modifier"
+                              styleClass="image-action" />
+                    <h:commandButton action="#{modelParcelle.supprimer(item.idCulture)}"
+                                     onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
+                                     image="#{resource['images:supprimer.png']}"
+                                     title="Supprimer"
+                                     styleClass="image-action" />
+                </h:column>
+
+            </h:dataTable>
+        </h:form>
+
+        <!-- Formulaire pour ajout -->
+        <h:form>
+            <br />
+            <h:commandButton value="Ajouter une association" outcome="formulaire" />
+        </h:form>
+
+    </ui:define>
+
 </ui:composition>
 </html>

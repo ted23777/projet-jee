@@ -2,12 +2,18 @@ package projet.ejb.data;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -47,6 +53,11 @@ public class Culture {
 
     @Column(name = "nom")
     private String nom;
+    
+ // Relation vers la table Contenir
+    @OneToMany(mappedBy = "culture", cascade = CascadeType.ALL)
+    private List<Contenir> contenirs = new ArrayList<>();
+
 
     //-------
     // Getters & Setters
@@ -68,6 +79,12 @@ public class Culture {
         this.nom = nom;
     }
 
+    public List<Contenir> getContenirs() { 
+    	return contenirs; 
+    }
+    public void setContenirs(List<Contenir> contenirs) { 
+    	this.contenirs = contenirs; 
+    }
     //-------
     // equals() et hashcode()
     //-------

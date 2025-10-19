@@ -6,13 +6,17 @@ import projet.ejb.data.Parcelle;
 
 public interface IDaoParcelle {
 
-    int inserer(Parcelle parcelle);
+	 	int inserer(Parcelle parcelle);
 
-    void modifier(Parcelle parcelle);
+	    void modifier(Parcelle parcelle);
 
-    void supprimer(int idParcelle);
+	    void supprimer(int idParcelle);
 
-    Parcelle retrouver(int idParcelle);
+	    Parcelle retrouver(int idParcelle);
 
-    List<Parcelle> listerTout();
+	    List<Parcelle> listerTout();
+
+	    List<Parcelle> listerLibres();
+
+	    List<Parcelle> listerParCompte(int idCompte);
 }

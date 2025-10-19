@@ -66,5 +66,5 @@
   PATH="/pages/admin/statistiques/liste.xhtml" SHAPE="408,472,50,25"
   model-entity="JSFProcessGroup" persistent="true"/>
  <PROCESS-ITEM NAME="rules:#pages#admin#mouvements#liste.xhtml"
-  PATH="/pages/admin/mouvements/liste.xhtml" SHAPE="568,600,50,25" model-entity="JSFProcessGroup"/>
+  PATH="/pages/admin/mouvements/liste.xhtml" SHAPE="416,552,50,25" model-entity="JSFProcessGroup"/>
 </PROCESS>
