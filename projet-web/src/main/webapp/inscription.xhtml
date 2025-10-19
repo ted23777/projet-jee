@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui:composition template="/template/page-standard.xhtml"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:define name="titre">Inscription</ui:define>
+
+    <ui:define name="contenu">
+        <h2>Créer un nouveau compte</h2>
+
+        <div class="info-panel">
+            <p>
+                Remplissez le formulaire ci-dessous pour créer votre compte.
+                Tous les champs sont obligatoires.
+            </p>
+        </div>
+
+        <br />
+
+        <h:form styleClass="form-container">
+            <fieldset class="form-fieldset">
+                <legend>Informations personnelles</legend>
+
+                <table class="form">
+                    <!-- Nom -->
+                    <tr>
+                        <td class="form-label">
+                            <h:outputLabel for="nom" value="Nom :" styleClass="required-field" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputText id="nom"
+                                         value="#{modelInscription.courant.nom}"
+                                         size="30"
+                                         required="true"
+                                         requiredMessage="Le nom est obligatoire"
+                                         styleClass="text-input" />
+                            <br />
+                            <h:message for="nom" errorClass="error" />
+                        </td>
+                    </tr>
+
+                    <!-- Prénom -->
+                    <tr>
+                        <td class="form-label">
+                            <h:outputLabel for="prenom" value="Prénom :" styleClass="required-field" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputText id="prenom"
+                                         value="#{modelInscription.courant.prenom}"
+                                         size="30"
+                                         required="true"
+                                         requiredMessage="Le prénom est obligatoire"
+                                         styleClass="text-input" />
+                            <br />
+                            <h:message for="prenom" errorClass="error" />
+                        </td>
+                    </tr>
+
+                    <!-- Adresse mail -->
+                    <tr>
+                        <td class="form-label">
+                            <h:outputLabel for="email" value="Adresse mail :" styleClass="required-field" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputText id="email"
+                                         value="#{modelInscription.courant.adresseMail}"
+                                         size="40"
+                                         required="true"
+                                         requiredMessage="L'adresse mail est obligatoire"
+                                         styleClass="text-input" />
+                            <br />
+                            <span class="field-hint">Format : exemple@domaine.com</span>
+                            <br />
+                            <h:message for="email" errorClass="error" />
+                        </td>
+                    </tr>
+
+                    <!-- Mot de passe -->
+                    <tr>
+                        <td class="form-label">
+                            <h:outputLabel for="motDePasse" value="Mot de passe :" styleClass="required-field" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputSecret id="motDePasse"
+                                           value="#{modelInscription.courant.motDePasse}"
+                                           size="30"
+                                           required="true"
+                                           requiredMessage="Le mot de passe est obligatoire"
+                                           styleClass="text-input" />
+                            <br />
+                            <span class="field-hint">Minimum 6 caractères</span>
+                            <br />
+                            <h:message for="motDePasse" errorClass="error" />
+                        </td>
+                    </tr>
+
+                    <!-- Confirmation mot de passe -->
+                    <tr>
+                        <td class="form-label">
+                            <h:outputLabel for="confirmMotDePasse" value="Confirmer mot de passe :" styleClass="required-field" />
+                        </td>
+                        <td class="form-input">
+                            <h:inputSecret id="confirmMotDePasse"
+                                           value="#{modelInscription.confirmMotDePasse}"
+                                           size="30"
+                                           required="true"
+                                           requiredMessage="La confirmation du mot de passe est obligatoire"
+                                           styleClass="text-input" />
+                            <br />
+                            <h:message for="confirmMotDePasse" errorClass="error" />
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+
+            <br />
+
+            <!-- Boutons d'action -->
+            <div class="form-actions">
+                <h:commandButton action="#{modelInscription.inscrire()}"
+                                 value="Créer mon compte"
+                                 styleClass="btn btn-primary btn-large" />
+
+                <h:commandButton action="connexion"
+                                 value="Annuler"
+                                 immediate="true"
+                                 styleClass="btn btn-secondary btn-large" />
+            </div>
+
+            <br />
+
+            <!-- Aide contextuelle -->
+            <div class="context-help">
+                <h4>Aide</h4>
+                <ul>
+                    <li><strong>Nom et Prénom :</strong> Vos informations personnelles</li>
+                    <li><strong>Adresse mail :</strong> Servira d'identifiant de connexion</li>
+                    <li><strong>Mot de passe :</strong> Choisissez un mot de passe sécurisé</li>
+                </ul>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>

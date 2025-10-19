@@ -24,13 +24,21 @@
 				<td><h:inputSecret size="15" value="#{modelConnexion.courant.motDePasse}" /></td>
 			</tr>
 		</table>
-	
+
 			<br />
 			<h:commandButton action="#{modelConnexion.connect()}" value="Se connecter">
 			</h:commandButton>
 			<input type="reset" value="Effacer" />
 	</h:form>
-	
+
+	<br />
+	<div class="info-panel">
+		<p>Vous n'avez pas encore de compte ?</p>
+		<h:form>
+			<h:commandButton action="inscription" value="Créer un compte" styleClass="btn btn-secondary" />
+		</h:form>
+	</div>
+
 	</ui:define>
 
 </ui:composition>

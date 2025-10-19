@@ -15,27 +15,27 @@
 			value="#{modelCompte.liste}" var="item" 
 			rowClasses="impair, pair" columnClasses="left,left,center"
 		>
-			<h:column>
+			<!-- <h:column>
 				<f:facet name="header">
 					<h:outputText value="Psudo" />
 				</f:facet>
 				#{item.pseudo}
-			</h:column>
+			</h:column> -->
 			
-			<h:column>
+			<!--  <h:column>
 				<f:facet name="header">
 					<h:outputText value="Rôle" />
 				</f:facet>
 				<h:outputText rendered="#{! item.flagAdmin}" value="UTILIDZYRUR" />
 				<h:outputText rendered="#{item.flagAdmin}" value="ADMIN" />
-			</h:column>
+			</h:column>-->
 			
 			<h:column>
 				<f:facet name="header">
 					<h:outputText value="Actions" />
 				</f:facet>
 				<h:button
-					outcome="formulaire?id=#{item.id}"
+					outcome="formulaire"
 					image="#{ resource['images:modifier.png'] }"
 					title="Modifier" 
 					styleClass="image-action"

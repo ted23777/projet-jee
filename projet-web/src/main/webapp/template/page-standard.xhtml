@@ -2,58 +2,93 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
 <h:head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title><ui:insert name="titre">Titre</ui:insert></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title><ui:insert name="titre">Titre</ui:insert></title>
 
-	<h:outputStylesheet name="styles.css" library="css" />
+    <!-- CSS -->
+    <h:outputStylesheet name="styles.css" library="css" />
 
-	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.js" type="text/javascript"></script>
-	<script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/jquery-ui.js" type="text/javascript" ></script>	
-	<link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/themes/smoothness/jquery-ui.css" />
-	<h:outputScript name="datepicker-fr.js" library="js" />
+    <!-- jQuery -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.6.0.js" type="text/javascript"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/jquery-ui.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/themes/smoothness/jquery-ui.css" />
 
-	<ui:insert name="head" />
+    <h:outputScript name="datepicker-fr.js" library="js" />
+
+    <ui:insert name="head" />
 </h:head>
+
 <h:body>
-<ui:debug hotkey="x" rendered="#{initParam['javax.faces.PROJECT_STAGE'] == 'Development'}"/>
-<div id="body">
+    <ui:debug hotkey="x" rendered="#{initParam['javax.faces.PROJECT_STAGE'] == 'Development'}"/>
 
-<div id="header">
-	<h:outputText value="&nbsp;" rendered="#{not compteActif.loggedIn}" />
-	<h:form rendered="#{compteActif.loggedIn}">
-		<h:link outcome="comptes" value="Personnes" rendered="#{compteActif.loggedIn }" />
-		<h:panelGroup rendered="#{compteActif.admin}">
-			<h:link value="Cultures" outcome="cultures" />
-				<h:link value="Entretiens" outcome="entretiens" />
-				<h:link value="Paiements" outcome="mouvements" />
-				<h:link value="Parcelles" outcome="parcelles" />
-				<h:link value="Reservations" outcome="reservations" />
-				<h:link value="Statistiques" outcome="statistiques" />
-		</h:panelGroup>
-		<h:commandLink action="#{compteActif.disconnect()}" value="Déconnexion"  />
-	</h:form>
-</div>
+    <div id="body">
 
-<h1><ui:insert name="titre">Titre absent</ui:insert></h1>
+        <!-- ===================== HEADER ===================== -->
+        <div id="header">
+            <!-- Si non connecté -->
+            <h:outputText value="&nbsp;" rendered="#{not compteActif.loggedIn}" />
 
-<h:messages errorClass="error" globalOnly="false" infoClass="info" styleClass="messages" warnClass="warning" />
+            <!-- Si connecté -->
+            <h:form rendered="#{compteActif.loggedIn}">
 
-<div id="content">
-	<ui:insert name="contenu">
-		Contenu absent
-	</ui:insert>
-</div>
+                <!-- ===================== Menu ADMIN ===================== -->
+                <h:panelGroup rendered="#{compteActif.admin}">
+                    <h:outputText value="👑 Administration : " styleClass="menu-section-title"/>
+                    <h:link outcome="comptes" value="Personnes" />
+                    <h:link outcome="cultures" value="Cultures" />
+                    <h:link outcome="entretiens" value="Entretiens" />
+                    <h:link outcome="mouvements" value="Paiements" />
+                    <h:link outcome="parcelles" value="Parcelles" />
+                    <h:link outcome="reservations" value="Réservations" />
+                    <h:link outcome="statistiques" value="Statistiques" />
+                </h:panelGroup>
 
-<div id="footer">©
-	<h:outputText value="#{utilJsf.now()}" >
-		<f:convertDateTime pattern="yyyy" />
-	</h:outputText>
- 	- #{initParam['site.name']}
-</div>
+                <!-- ===================== Menu UTILISATEUR ===================== -->
+                <h:panelGroup rendered="#{not compteActif.admin}">
+                    <h:outputText value="👤 Espace Utilisateur : " styleClass="menu-section-title"/>
+                    <h:link outcome="home" value="Accueil" />
+                    <h:link outcome="mesMouvements" value="Mes paiements" />
+                    <h:link outcome="mesCultures" value="Mes cultures" />
+                    <h:link outcome="mesParcelles" value="Mes parcelles" />
+                    <!--  <h:link outcome="mesReservations" value="Mes réservations" /> -->
+                    <h:link outcome="monCompte" value="Mon compte" />
+                </h:panelGroup>
 
-</div></h:body>
+                <!-- ===================== Déconnexion ===================== -->
+                <h:commandLink action="#{compteActif.disconnect()}" value="🚪 Déconnexion" />
+            </h:form>
+        </div>
+
+        <!-- ===================== TITRE ===================== -->
+        <h1><ui:insert name="titre">Titre absent</ui:insert></h1>
+
+        <!-- ===================== MESSAGES ===================== -->
+        <h:messages errorClass="error"
+                    infoClass="info"
+                    warnClass="warning"
+                    styleClass="messages"
+                    globalOnly="false" />
+
+        <!-- ===================== CONTENU ===================== -->
+        <div id="content">
+            <ui:insert name="contenu">
+                Contenu absent
+            </ui:insert>
+        </div>
+
+        <!-- ===================== FOOTER ===================== -->
+        <div id="footer">
+            © <h:outputText value="#{utilJsf.now()}">
+                <f:convertDateTime pattern="yyyy" />
+            </h:outputText>
+            - #{initParam['site.name']}
+        </div>
+
+    </div>
+</h:body>
 </html>
