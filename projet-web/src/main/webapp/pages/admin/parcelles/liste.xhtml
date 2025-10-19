@@ -12,16 +12,17 @@
 
         <h2>Liste des parcelles et des cultures qu’elles abritent</h2>
 
-        <!-- Formulaire principal -->
-        <h:form>
+        <!-- === Tableau principal === -->
+        <h:form id="formListe">
+
             <!-- Message si aucune donnée -->
-            <h:panelGroup rendered="#{empty modelContenir.liste}">
+            <h:panelGroup rendered="#{empty modelParcelle.listeContenir}">
                 <h4>Aucune association parcelle-culture trouvée.</h4>
             </h:panelGroup>
 
             <!-- Tableau principal -->
-            <h:dataTable value="#{modelContenir.liste}" var="item"
-                         rendered="#{not empty modelContenir.liste}"
+            <h:dataTable value="#{modelParcelle.listeContenir}" var="item"
+                         rendered="#{not empty modelParcelle.listeContenir}"
                          styleClass="liste"
                          rowClasses="impair, pair"
                          columnClasses="center,left,center,center">
@@ -30,21 +31,21 @@
                     <f:facet name="header">
                         <h:outputText value="Parcelle" />
                     </f:facet>
-                    <h:outputText value="#{modelContenir.getNomParcelle(item.idParcelle)}" />
+                    <h:outputText value="#{modelParcelle.getNomParcelle(item.idParcelle)}" />
                 </h:column>
 
                 <h:column>
                     <f:facet name="header">
                         <h:outputText value="Culture" />
                     </f:facet>
-                    <h:outputText value="#{modelContenir.getNomCulture(item.idCulture)}" />
+                    <h:outputText value="#{modelParcelle.getNomCulture(item.idCulture)}" />
                 </h:column>
 
                 <h:column>
                     <f:facet name="header">
-                        <h:outputText value="Part" />
+                        <h:outputText value="Part (%)" />
                     </f:facet>
-                    <h:outputText value="#{item.part}%">
+                    <h:outputText value="#{item.part}">
                         <f:convertNumber type="number" maxFractionDigits="2" />
                     </h:outputText>
                 </h:column>
@@ -53,7 +54,7 @@
                     <f:facet name="header">
                         <h:outputText value="Part restante sur la parcelle" />
                     </f:facet>
-                    <h:outputText value="#{modelContenir.getPartRestante(item.idParcelle)}%">
+                    <h:outputText value="#{modelParcelle.getPartRestantePourcent() }%">
                         <f:convertNumber type="number" maxFractionDigits="2" />
                     </h:outputText>
                 </h:column>
@@ -62,11 +63,15 @@
                     <f:facet name="header">
                         <h:outputText value="Actions" />
                     </f:facet>
-                    <h:button outcome="formulaire?id=#{item.idParcelle}"
-                              image="#{resource['images:modifier.png']}"
-                              title="Modifier"
-                              styleClass="image-action" />
-                    <h:commandButton action="#{modelParcelle.supprimer(item.idCulture)}"
+
+                    <!-- Bouton modifier (redirige vers la page de détail de la parcelle) -->
+                    <h:link outcome="formulaire">
+                        <f:param name="id" value="#{item.idParcelle}" />
+                        <h:graphicImage library="images" name="modifier.png" title="Modifier" styleClass="image-action" />
+                    </h:link>
+
+                    <!-- Bouton supprimer l’association -->
+                    <h:commandButton action="#{modelParcelle.supprimerCulture(item.idParcelle, item.idCulture)}"
                                      onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
                                      image="#{resource['images:supprimer.png']}"
                                      title="Supprimer"
@@ -74,12 +79,15 @@
                 </h:column>
 
             </h:dataTable>
+
         </h:form>
 
-        <!-- Formulaire pour ajout -->
-        <h:form>
+        <!-- === Bouton d'ajout === -->
+        <h:form id="formAjout">
             <br />
-            <h:commandButton value="Ajouter une association" outcome="formulaire" />
+            <h:commandButton value="Ajouter une parcelle"
+                             action="formulaire"
+                             styleClass="btn btn-success" />
         </h:form>
 
     </ui:define>
