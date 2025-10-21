@@ -19,6 +19,7 @@ public interface IDaoCulture {
     List<Culture> rechercherParNom(String nom);
 
     long compter();
-
-    boolean nomExiste(String nom, int idCulture);
+    
+    Culture retrouverParNom(String nom);
+    
 }

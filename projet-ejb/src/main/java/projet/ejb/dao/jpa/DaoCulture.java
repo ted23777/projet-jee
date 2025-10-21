@@ -7,6 +7,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 import projet.ejb.dao.IDaoCulture;
@@ -48,8 +49,7 @@ public class DaoCulture implements IDaoCulture {
     @Override
     public List<Culture> listerTout() {
         var jpql = "SELECT c FROM Culture c ORDER BY c.nom";
-        var query = em.createQuery(jpql, Culture.class);
-        return query.getResultList();
+        return em.createQuery(jpql, Culture.class).getResultList();
     }
 
     @Override
@@ -58,7 +58,6 @@ public class DaoCulture implements IDaoCulture {
         if (crit.isEmpty()) {
             return listerTout();
         }
-
         var jpql = "SELECT c FROM Culture c WHERE LOWER(c.nom) LIKE :pattern ORDER BY c.nom ASC";
         var query = em.createQuery(jpql, Culture.class);
         query.setParameter("pattern", "%" + crit + "%");
@@ -68,22 +67,18 @@ public class DaoCulture implements IDaoCulture {
     @Override
     public long compter() {
         var jpql = "SELECT COUNT(c) FROM Culture c";
-        var query = em.createQuery(jpql, Long.class);
-        return query.getSingleResult();
+        return em.createQuery(jpql, Long.class).getSingleResult();
     }
 
     @Override
-    public boolean nomExiste(String nom, int idCulture) {
-        var crit = (nom == null) ? "" : nom.trim().toLowerCase();
-        var jpql = "SELECT COUNT(c) FROM Culture c " +
-                   "WHERE LOWER(c.nom) = :nom " +
-                   "AND (:idCulture = 0 OR c.id <> :idCulture)";
-
-        var query = em.createQuery(jpql, Long.class);
-        query.setParameter("nom", crit);
-        query.setParameter("idCulture", idCulture);
-
-        var count = query.getSingleResult();
-        return count > 0;
+    public Culture retrouverParNom(String nom) {
+        var jpql = "SELECT c FROM Culture c WHERE LOWER(c.nom) = :nom";
+        var query = em.createQuery(jpql, Culture.class);
+        query.setParameter("nom", nom.trim().toLowerCase());
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

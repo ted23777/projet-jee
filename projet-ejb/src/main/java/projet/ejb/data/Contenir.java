@@ -1,64 +1,46 @@
 package projet.ejb.data;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.io.Serializable;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "contenir")
-@IdClass(ContenirPK.class)
-@NamedQueries({
-		@NamedQuery(name = "Contenir.findAll", query = "SELECT c FROM Contenir c ORDER BY c.idParcelle, c.idCulture"),
-		@NamedQuery(name = "Contenir.findByIdParcelle", query = "SELECT c FROM Contenir c WHERE c.idParcelle = :idParcelle"),
-		@NamedQuery(name = "Contenir.findByIdCulture", query = "SELECT c FROM Contenir c WHERE c.idCulture = :idCulture"),
-		@NamedQuery(name = "Contenir.count", query = "SELECT COUNT(c) FROM Contenir c") })
 public class Contenir implements Serializable {
-
+	
+	//@EmbeddedId
+	//private ContenirPK contenirPK;
+	
 	@Id
-	@Column(name = "idParcelle")
-	private int idParcelle;
+	@GeneratedValue( strategy = IDENTITY)
+	@Column( name = "idContenir")
+	private int idContenir;
 
-	@Id
-	@Column(name = "idCulture")
-	private int idCulture;
+	@ManyToOne
+	@JoinColumn(name = "idParcelle")
+	private Parcelle parcelle;
+
+	@ManyToOne
+	@JoinColumn(name = "idCulture")
+	private Culture culture;
+
 
 	@Column(name = "part")
 	private Double part;
 
-	// Associations JPA (optionnelles, si bidirectionnelles)
-	@ManyToOne
-	@JoinColumn(name = "idParcelle", insertable = false, updatable = false)
-	private Parcelle parcelle;
-
-	@ManyToOne
-	@JoinColumn(name = "idCulture", insertable = false, updatable = false)
-	private Culture culture;
-
 	// Constructeurs
 	public Contenir() {
-	}
 
-	public Contenir(int idParcelle, int idCulture, double part) {
-		this.idParcelle = idParcelle;
-		this.idCulture = idCulture;
-		this.part = part;
 	}
 
 	// Getters / Setters
-	public int getIdParcelle() {
-		return idParcelle;
-	}
 
-	public void setIdParcelle(int idParcelle) {
-		this.idParcelle = idParcelle;
-	}
-
-	public int getIdCulture() {
-		return idCulture;
-	}
-
-	public void setIdCulture(int idCulture) {
-		this.idCulture = idCulture;
+	public Contenir(Parcelle parcelle, Culture culture, Double part) {
+		this.parcelle = parcelle;
+		this.culture = culture;
+		this.part = part;
 	}
 
 	public Double getPart() {

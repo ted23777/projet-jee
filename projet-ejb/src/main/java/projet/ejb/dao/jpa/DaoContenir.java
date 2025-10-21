@@ -5,15 +5,18 @@ import java.util.List;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import projet.ejb.dao.IDaoContenir;
 import projet.ejb.data.Contenir;
+import projet.ejb.data.Culture;
+import projet.ejb.data.Parcelle;
 
 @Stateless
 @Local
-@TransactionAttribute
+@TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class DaoContenir implements IDaoContenir {
 
     @PersistenceContext
@@ -21,57 +24,121 @@ public class DaoContenir implements IDaoContenir {
 
     @Override
     public void inserer(Contenir contenir) {
-        // Insertion de l'objet Contenir sans retour d'identifiant car il utilise une clé composite
         em.persist(contenir);
         em.flush();
     }
 
     @Override
     public void modifier(Contenir contenir) {
-        // Mise à jour de l'objet Contenir
         em.merge(contenir);
     }
 
     @Override
-    public void supprimer(int idParcelle, int idCulture) {
-        // Recherche et suppression de l'objet Contenir en utilisant les clés composites
-        em.remove(retrouver(idParcelle, idCulture));
+    public void supprimer(int idContenir) {
+        em.remove(retrouver(idContenir));
     }
 
     @Override
-    public Contenir retrouver(int idParcelle, int idCulture) {
-        // Recherche de l'objet Contenir en utilisant la clé composite
-        return em.find(Contenir.class, new Object[] { idParcelle, idCulture });
+    public Contenir retrouver(int idContenir) {
+        return em.find(Contenir.class, idContenir);
     }
 
     @Override
     public List<Contenir> listerTout() {
-        // Listing de tous les objets Contenir
-        var jpql = "SELECT c FROM Contenir c ORDER BY c.idParcelle";
+        var jpql = "SELECT c FROM Contenir c ORDER BY c.parcelle.id";
+        return em.createQuery(jpql, Contenir.class).getResultList();
+    }
+
+    @Override
+    public List<Contenir> listerParParcelle(int idParcelle) {
+        var jpql = "SELECT c FROM Contenir c WHERE c.parcelle.id = :idParcelle";
         var query = em.createQuery(jpql, Contenir.class);
+        query.setParameter("idParcelle", idParcelle);
         return query.getResultList();
     }
 
-	@Override
-	public List<Contenir> listerParParcelle(int idParcelle) {
-		var jpql = "SELECT c FROM Contenir c WHERE c.idParcelle = :idParcelle";
-		var query = em.createQuery(jpql, Contenir.class);
-		query.setParameter("idParcelle", idParcelle);
-		return query.getResultList();
-	}
+    @Override
+    public List<Contenir> listerParCulture(int idCulture) {
+        var jpql = "SELECT c FROM Contenir c WHERE c.culture.id = :idCulture";
+        var query = em.createQuery(jpql, Contenir.class);
+        query.setParameter("idCulture", idCulture);
+        return query.getResultList();
+    }
 
-	@Override
-	public List<Contenir> listerParCulture(int idCulture) {
-		var jpql = "SELECT c FROM Contenir c WHERE c.idCulture = :idCulture";
-		var query = em.createQuery(jpql, Contenir.class);
-		query.setParameter("idCulture", idCulture);
-		return query.getResultList();
-	}
+    @Override
+    public long compter() {
+        var jpql = "SELECT COUNT(c) FROM Contenir c";
+        return em.createQuery(jpql, Long.class).getSingleResult();
+    }
 
-	@Override
-	public long compter() {
-		var jpql = "SELECT COUNT(c) FROM Contenir c";
-		var query = em.createQuery(jpql, Long.class);
-		return query.getSingleResult();
-	}
+    @Override
+    public void supprimerParCulture(int idCulture) {
+        var jpql = "DELETE FROM Contenir c WHERE c.culture.id = :idCulture";
+        var query = em.createQuery(jpql);
+        query.setParameter("idCulture", idCulture);
+        query.executeUpdate();
+    }
+
+    @Override
+    public void supprimerParParcelle(int idParcelle) {
+        var jpql = "DELETE FROM Contenir c WHERE c.parcelle.id = :idParcelle";
+        var query = em.createQuery(jpql);
+        query.setParameter("idParcelle", idParcelle);
+        query.executeUpdate();
+    }
+
+    @Override
+    public double calculerPartTotaleParParcelle(int idParcelle) {
+        var jpql = "SELECT COALESCE(SUM(c.part), 0) FROM Contenir c WHERE c.parcelle.id = :idParcelle";
+        var query = em.createQuery(jpql, Double.class);
+        query.setParameter("idParcelle", idParcelle);
+        return query.getSingleResult();
+    }
+
+    @Override
+    public void ajouterCultureAParcelle(int idParcelle, int idCulture, double part) {
+        Parcelle parcelle = em.find(Parcelle.class, idParcelle);
+        Culture culture = em.find(Culture.class, idCulture);
+
+        if (parcelle != null && culture != null) {
+            Contenir contenir = new Contenir(parcelle, culture, part);
+            em.persist(contenir);
+            em.flush();
+        }
+    }
+
+    @Override
+    public void retirerCultureDeParcelle(int idParcelle, int idCulture) {
+        var jpql = "DELETE FROM Contenir c WHERE c.parcelle.id = :idParcelle AND c.culture.id = :idCulture";
+        var query = em.createQuery(jpql);
+        query.setParameter("idParcelle", idParcelle);
+        query.setParameter("idCulture", idCulture);
+        query.executeUpdate();
+    }
+
+    @Override
+    public void modifierPartCulture(int idParcelle, int idCulture, double nouvellePart) {
+        var jpql = "UPDATE Contenir c SET c.part = :nouvellePart WHERE c.parcelle.id = :idParcelle AND c.culture.id = :idCulture";
+        var query = em.createQuery(jpql);
+        query.setParameter("nouvellePart", nouvellePart);
+        query.setParameter("idParcelle", idParcelle);
+        query.setParameter("idCulture", idCulture);
+        query.executeUpdate();
+    }
+
+    @Override
+    public List<Culture> listerCulturesDeParcelle(int idParcelle) {
+        var jpql = "SELECT c.culture FROM Contenir c WHERE c.parcelle.id = :idParcelle";
+        var query = em.createQuery(jpql, Culture.class);
+        query.setParameter("idParcelle", idParcelle);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Parcelle> listerParcellesAvecCulture(int idCulture) {
+        var jpql = "SELECT c.parcelle FROM Contenir c WHERE c.culture.id = :idCulture";
+        var query = em.createQuery(jpql, Parcelle.class);
+        query.setParameter("idCulture", idCulture);
+        return query.getResultList();
+    }
 }

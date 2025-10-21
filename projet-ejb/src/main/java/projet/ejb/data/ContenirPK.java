@@ -2,10 +2,15 @@ package projet.ejb.data;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
+
+//@Embeddable
 public class ContenirPK implements Serializable {
+	
 	
 private static final long serialVersionUID = 1L;
     
+	
     private int idParcelle;
     private int idCulture;
     
@@ -38,6 +43,8 @@ private static final long serialVersionUID = 1L;
     public void setIdCulture(int idCulture) {
         this.idCulture = idCulture;
     }
+    
+	
     
     //-------
     // equals() et hashcode()

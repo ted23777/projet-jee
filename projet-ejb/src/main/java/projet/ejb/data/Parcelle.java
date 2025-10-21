@@ -11,80 +11,106 @@ import javax.persistence.*;
 @Table(name = "parcelle")
 public class Parcelle {
 
-    //-------
-    // Champs
-    //-------
+	// -------
+	// Champs
+	// -------
 
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "idparcelle")
-    private int id;
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "idparcelle")
+	private int id;
 
-    @Column(name = "surface")
-    private Double surface;
+	@Column(name = "surface")
+	private Double surface;
 
-    @Column(name = "libre")
-    private Boolean libre;
+	@Column(name = "libre")
+	private Boolean libre;
 
-    @ManyToOne
-    @JoinColumn(name = "idcompte")
-    private Compte compte;
+	@ManyToOne
+	@JoinColumn(name = "idcompte")
+	private Compte compte;
 
-    // Relation correcte : Une parcelle peut contenir plusieurs "Contenir"
-    @OneToMany(mappedBy = "parcelle", cascade = CascadeType.ALL)
-    private List<Contenir> contenirs = new ArrayList<>();
+	// Relation correcte : Une parcelle peut contenir plusieurs "Contenir"
+	@OneToMany(mappedBy = "parcelle", cascade = CascadeType.ALL)
+	private List<Contenir> contenirs = new ArrayList<>();
 
-    //-------
-    // Constructeurs
-    //-------
+	// -------
+	// Constructeurs
+	// -------
 
-    public Parcelle() {}
+	public Parcelle() {
+	}
 
-    public Parcelle(Double surface, Boolean libre) {
-        this.surface = surface;
-        this.libre = libre;
-    }
+	public Parcelle(Double surface, Boolean libre) {
+		this.surface = surface;
+		this.libre = libre;
+	}
 
-    //-------
-    // Getters & Setters
-    //-------
+	// -------
+	// Getters & Setters
+	// -------
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+	public int getId() {
+		return id;
+	}
 
-    public Double getSurface() { return surface; }
-    public void setSurface(Double surface) { this.surface = surface; }
+	public void setId(int id) {
+		this.id = id;
+	}
 
-    public Boolean getLibre() { return libre; }
-    public void setLibre(Boolean libre) { this.libre = libre; }
+	public Double getSurface() {
+		return surface;
+	}
 
-    public Compte getCompte() { return compte; }
-    public void setCompte(Compte compte) { this.compte = compte; }
+	public void setSurface(Double surface) {
+		this.surface = surface;
+	}
 
-    public List<Contenir> getContenirs() { return contenirs; }
-    public void setContenirs(List<Contenir> contenirs) { this.contenirs = contenirs; }
+	public Boolean getLibre() {
+		return libre;
+	}
 
-    //-------
-    // equals() et hashCode()
-    //-------
+	public void setLibre(Boolean libre) {
+		this.libre = libre;
+	}
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        return result;
-    }
+	public Compte getCompte() {
+		return compte;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Parcelle other = (Parcelle) obj;
-        return id == other.id;
-    }
+	public void setCompte(Compte compte) {
+		this.compte = compte;
+	}
+
+	public List<Contenir> getContenirs() {
+		return contenirs;
+	}
+
+	public void setContenirs(List<Contenir> contenirs) {
+		this.contenirs = contenirs;
+	}
+
+	// -------
+	// equals() et hashCode()
+	// -------
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Parcelle other = (Parcelle) obj;
+		return id == other.id;
+	}
 }

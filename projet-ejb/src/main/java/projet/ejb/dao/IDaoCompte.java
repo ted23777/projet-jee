@@ -3,6 +3,7 @@ package projet.ejb.dao;
 import java.util.List;
 
 import projet.ejb.data.Compte;
+import projet.ejb.data.Parcelle;
 
 
 public interface IDaoCompte {
@@ -20,5 +21,11 @@ public interface IDaoCompte {
 	Compte 		validerAuthentification( String email, String motDePasse );
 
 	boolean verifierUniciteMail(String email, int idCompte);
+	
+	// 🔹 Côté utilisateur : lister ses propres parcelles
+	List<Parcelle> listerParcellesDuCompte(int idCompte);
+
+	// 🔹 Côté admin : lister tous les comptes ayant au moins une parcelle réservée
+	List<Compte> listerComptesAvecParcelles();
 
 }
