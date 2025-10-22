@@ -61,6 +61,10 @@ public class ModelCompte implements Serializable {
 			}
 			return courant;
 		}
+		
+		public void setCourant(Compte courant) {
+		    this.courant = courant;
+		}
 	
 		 public List<Parcelle> getParcellesDuCompte() {
 		        if (courant != null && courant.getId() != null) {
@@ -100,7 +104,12 @@ public class ModelCompte implements Serializable {
 				serviceCompte.modifier( mapper.map(courant) );
 			}
 			UtilJsf.messageInfo( "Mise à jour effectuée avec succès." );
-			return "liste";
+			if (courant.isAdmin()) {
+				return "liste";
+			} else {
+				return null;
+			}
+			
 		} catch (ExceptionValidation e) {
 			UtilJsf.messageError(e);
 			return null;

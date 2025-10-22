@@ -8,42 +8,27 @@
 
 <ui:composition template="/template/page-standard.xhtml">
     <ui:define name="titre">
-        Gestion des Mouvements
+        Mes Mouvements Financiers
     </ui:define>
 
     <ui:define name="contenu">
-        <h2>Suivi des Mouvements Financiers</h2>
+        <h2>📊 Suivi de mes mouvements financiers</h2>
 
-        <!-- Barre de recherche et filtres avancés -->
         <h:form id="formRecherche">
             <fieldset class="search-panel">
-                <legend>🔍 Recherche et Filtres</legend>
+                <legend>🔍 Recherche et filtres</legend>
 
                 <h:panelGrid columns="3" columnClasses="filter-column">
-                    <!-- Recherche par libellé -->
                     <h:panelGroup>
-                        <h:outputLabel value="Recherche par libellé:" for="critere" />
+                        <h:outputLabel value="Recherche par libellé :" for="critere" />
                         <h:inputText id="critere"
                                      value="#{modelMouvement.critereRecherche}"
-                                     placeholder="Ex: Paiement, Virement..."
+                                     placeholder="Ex : Paiement, Virement..."
                                      styleClass="search-input" />
                     </h:panelGroup>
 
-                    <!-- Filtrer par compte -->
-                    <h:panelGroup>
-                        <h:outputLabel value="Filtrer par compte:" for="compte" />
-                        <h:selectOneMenu id="compte" value="#{modelMouvement.compteSelectionne}">
-                            <f:selectItem itemValue="#{null}" itemLabel="-- Tous les comptes --" />
-                            <f:selectItems value="#{modelMouvement.comptesDisponibles}"
-                                           var="compte"
-                                           itemValue="#{compte.id}"
-                                           itemLabel="#{compte.nom} #{compte.prenom}" />
-                        </h:selectOneMenu>
-                    </h:panelGroup>
-
-                    <!-- Filtres avancés -->
                     <h:panelGroup rendered="#{modelMouvement.filtreActif}">
-                        <h:outputLabel value="Du:" for="dateDebut" />
+                        <h:outputLabel value="Du :" for="dateDebut" />
                         <h:inputText id="dateDebut"
                                      value="#{modelMouvement.dateDebut}"
                                      type="date"
@@ -53,7 +38,7 @@
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{modelMouvement.filtreActif}">
-                        <h:outputLabel value="Au:" for="dateFin" />
+                        <h:outputLabel value="Au :" for="dateFin" />
                         <h:inputText id="dateFin"
                                      value="#{modelMouvement.dateFin}"
                                      type="date"
@@ -63,7 +48,7 @@
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{modelMouvement.filtreActif}">
-                        <h:outputLabel value="Montant min:" for="montantMin" />
+                        <h:outputLabel value="Montant min :" for="montantMin" />
                         <h:inputText id="montantMin"
                                      value="#{modelMouvement.montantMin}"
                                      styleClass="number-input">
@@ -72,7 +57,7 @@
                     </h:panelGroup>
 
                     <h:panelGroup rendered="#{modelMouvement.filtreActif}">
-                        <h:outputLabel value="Montant max:" for="montantMax" />
+                        <h:outputLabel value="Montant max :" for="montantMax" />
                         <h:inputText id="montantMax"
                                      value="#{modelMouvement.montantMax}"
                                      styleClass="number-input">
@@ -81,14 +66,14 @@
                     </h:panelGroup>
                 </h:panelGrid>
 
-                <h:panelGrid columns="4" styleClass="button-panel">
+                <h:panelGrid columns="3" styleClass="button-panel">
                     <h:commandButton value="🔍 Rechercher"
                                      action="#{modelMouvement.rechercher}"
                                      styleClass="btn btn-primary">
                         <f:ajax execute="@form" render="@form tableForm" />
                     </h:commandButton>
 
-                    <h:commandButton value="#{modelMouvement.filtreActif ? '📊 Désactiver filtres avancés' : '📊 Activer filtres avancés'}"
+                    <h:commandButton value="#{modelMouvement.filtreActif ? '📊 Désactiver filtres' : '📊 Activer filtres'}"
                                      action="#{modelMouvement.toggleFiltre}"
                                      styleClass="btn btn-secondary">
                         <f:ajax execute="@form" render="@form tableForm" />
@@ -97,19 +82,14 @@
                     <h:commandButton value="🔄 Réinitialiser"
                                      action="#{modelMouvement.reinitialiserRecherche}"
                                      styleClass="btn btn-warning">
-                        <f:ajax render="@form tableForm" />
+                        <f:ajax execute="@form" render="@form tableForm" />
                     </h:commandButton>
-
-                    <h:outputText value="#{modelMouvement.nombreAffiches} / #{modelMouvement.nombreTotal} mouvements"
-                                  styleClass="info-text"
-                                  rendered="#{modelMouvement.filtresActifs}" />
                 </h:panelGrid>
             </fieldset>
         </h:form>
 
         <br />
 
-        <!-- Tableau des mouvements -->
         <h:form id="tableForm">
             <h:panelGroup rendered="#{empty modelMouvement.liste}">
                 <div class="empty-message">
@@ -146,7 +126,7 @@
                 </h:column>
 
                 <h:column>
-                    <f:facet name="header"><h:outputText value="👤 Compte" /></f:facet>
+                    <f:facet name="header"><h:outputText value="👤 Mon Compte" /></f:facet>
                     <h:outputText value="#{modelMouvement.getNomCompte(item)}" />
                 </h:column>
 
@@ -154,7 +134,7 @@
                     <f:facet name="header"><h:outputText value="⚙️ Actions" /></f:facet>
                     <h:button outcome="formulaire?id=#{item.id}"
                               image="#{ resource['images:modifier.png'] }"
-                              title="✏️ Modifier ce mouvement"
+                              title="✏️ Modifier"
                               styleClass="image-action action-edit" />
                     <h:commandButton action="#{modelMouvement.supprimer(item)}"
                                      onclick="return confirm('⚠️ Supprimer ce mouvement ?\n\n📋 #{item.libelle}\n💰 #{item.montant} €\n📅 #{item.date}');"
@@ -168,7 +148,7 @@
 
             <h:panelGroup rendered="#{not empty modelMouvement.liste}">
                 <div class="total-section">
-                    <strong>💵 Total des mouvements affichés:</strong>
+                    <strong>💵 Total :</strong>
                     <h:outputText value="#{modelMouvement.totalAffiches}" styleClass="total-amount">
                         <f:convertNumber type="currency" currencySymbol="€" />
                     </h:outputText>
@@ -179,12 +159,11 @@
         <br />
 
         <div class="action-footer">
-            <h:button value="➕ Ajouter un nouveau mouvement"
+            <h:button value="➕ Ajouter un mouvement"
                       outcome="formulaire"
                       styleClass="btn btn-success btn-large" />
             <p class="help-text">
-                💡 Les mouvements financiers permettent de suivre l'historique des transactions
-                liées aux comptes (paiements, virements, dépenses, etc.)
+                💡 Ici vous pouvez gérer vos propres transactions personnelles.
             </p>
         </div>
     </ui:define>

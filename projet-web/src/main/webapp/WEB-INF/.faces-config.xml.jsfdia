@@ -38,33 +38,77 @@
     NAME="output8" PATH="/pages/admin/statistiques/liste.xhtml"
     TARGET="rules:#pages#admin#statistiques#liste.xhtml"
     TITLE="statistiques" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="home::#pages#user#home.xhtml" NAME="output9"
+    PATH="/pages/user/home.xhtml" TARGET="rules:#pages#user#home.xhtml"
+    TITLE="home" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="mesMouvements::#pages#user#mouvements#liste.xhtml"
+    NAME="output10" PATH="/pages/user/mouvements/liste.xhtml"
+    TARGET="rules:#pages#user#mouvements#liste.xhtml"
+    TITLE="mesMouvements" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="mesCultures::#pages#user#cultures#liste.xhtml" NAME="output11"
+    PATH="/pages/user/cultures/liste.xhtml"
+    TARGET="rules:#pages#user#cultures#liste.xhtml" TITLE="mesCultures" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="mesParcelles::#pages#user#parcelles#liste.xhtml" NAME="output12"
+    PATH="/pages/user/parcelles/liste.xhtml"
+    TARGET="rules:#pages#user#parcelles#liste.xhtml"
+    TITLE="mesParcelles" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="monCompte::#pages#user#compte#formulaire.xhtml" NAME="output13"
+    PATH="/pages/user/compte/formulaire.xhtml"
+    TARGET="rules:#pages#user#compte#formulaire.xhtml" TITLE="monCompte" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT ID="inscription::#inscription.xhtml"
+    NAME="output15" PATH="/inscription.xhtml"
+    TARGET="rules:#inscription.xhtml" TITLE="inscription" model-entity="JSFProcessItemOutput"/>
+   <PROCESS-ITEM-OUTPUT
+    ID="parcellesDisponibles::#pages#user#parcelles#disponibles.xhtml"
+    NAME="output16" PATH="/pages/user/parcelles/disponibles.xhtml"
+    TARGET="rules:#pages#user#parcelles#disponibles.xhtml"
+    TITLE="parcellesDisponibles" model-entity="JSFProcessItemOutput"/>
   </PROCESS-ITEM>
  </PROCESS-ITEM>
- <PROCESS-ITEM NAME="rules:#connexion.xhtml" PATH="/connexion.xhtml"
-  SHAPE="72,24,50,25" model-entity="JSFProcessGroup"/>
- <PROCESS-ITEM NAME="rules:#pages#info.xhtml" PATH="/pages/info.xhtml"
-  SHAPE="480,96,50,25" model-entity="JSFProcessGroup" persistent="true"/>
- <PROCESS-ITEM NAME="rules:#pages#admin#comptes#liste.xhtml"
-  PATH="/pages/admin/comptes/liste.xhtml" SHAPE="240,32,50,25"
-  model-entity="JSFProcessGroup" persistent="true"/>
- <PROCESS-ITEM NAME="rules:#pages#admin#cultures#liste.xhtml"
-  PATH="/pages/admin/cultures/liste.xhtml" SHAPE="384,152,50,25"
-  model-entity="JSFProcessGroup" persistent="true"/>
- <PROCESS-ITEM NAME="rules:#pages#admin#entretiens#liste.xhtml"
-  PATH="/pages/admin/entretiens/liste.xhtml" SHAPE="392,224,50,25"
-  model-entity="JSFProcessGroup" persistent="true"/>
- <PROCESS-ITEM NAME="rules:#pages#admin#paiements#liste.xhtml"
-  PATH="/pages/admin/paiements/liste.xhtml" SHAPE="392,288,50,25"
-  model-entity="JSFProcessGroup" persistent="true"/>
+ <PROCESS-ITEM NAME="rules:#pages#user#home.xhtml"
+  PATH="/pages/user/home.xhtml" SHAPE="632,440,50,25" model-entity="JSFProcessGroup"/>
  <PROCESS-ITEM NAME="rules:#pages#admin#parcelles#liste.xhtml"
-  PATH="/pages/admin/parcelles/liste.xhtml" SHAPE="410,371,0,0"
-  model-entity="JSFProcessGroup" persistent="true"/>
- <PROCESS-ITEM NAME="rules:#pages#admin#reservations#liste.xhtml"
-  PATH="/pages/admin/reservations/liste.xhtml" SHAPE="408,424,50,25"
+  PATH="/pages/admin/parcelles/liste.xhtml" SHAPE="640,248,50,25"
   model-entity="JSFProcessGroup" persistent="true"/>
  <PROCESS-ITEM NAME="rules:#pages#admin#statistiques#liste.xhtml"
-  PATH="/pages/admin/statistiques/liste.xhtml" SHAPE="408,472,50,25"
+  PATH="/pages/admin/statistiques/liste.xhtml" SHAPE="640,336,50,25"
   model-entity="JSFProcessGroup" persistent="true"/>
+ <PROCESS-ITEM NAME="rules:#pages#user#parcelles#disponibles.xhtml"
+  PATH="/pages/user/parcelles/disponibles.xhtml" SHAPE="632,624,50,25" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#user#parcelles#liste.xhtml"
+  PATH="/pages/user/parcelles/liste.xhtml" SHAPE="632,584,50,25" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#user#mouvements#liste.xhtml"
+  PATH="/pages/user/mouvements/liste.xhtml" SHAPE="632,496,50,25" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#inscription.xhtml" PATH="/inscription.xhtml"
+  SHAPE="304,33,0,0" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin#reservations#liste.xhtml"
+  PATH="/pages/admin/reservations/liste.xhtml" SHAPE="640,288,50,25"
+  model-entity="JSFProcessGroup" persistent="true"/>
+ <PROCESS-ITEM NAME="rules:#pages#user#cultures#liste.xhtml"
+  PATH="/pages/user/cultures/liste.xhtml" SHAPE="632,544,50,25" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin#cultures#liste.xhtml"
+  PATH="/pages/admin/cultures/liste.xhtml" SHAPE="640,128,50,25"
+  model-entity="JSFProcessGroup" persistent="true"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin#entretiens#liste.xhtml"
+  PATH="/pages/admin/entretiens/liste.xhtml" SHAPE="640,168,50,25"
+  model-entity="JSFProcessGroup" persistent="true"/>
+ <PROCESS-ITEM NAME="rules:#pages#info.xhtml" PATH="/pages/info.xhtml"
+  SHAPE="640,80,50,25" model-entity="JSFProcessGroup" persistent="true"/>
  <PROCESS-ITEM NAME="rules:#pages#admin#mouvements#liste.xhtml"
+<<<<<<< HEAD
   PATH="/pages/admin/mouvements/liste.xhtml" SHAPE="416,552,50,25" model-entity="JSFProcessGroup"/>
+=======
+  PATH="/pages/admin/mouvements/liste.xhtml" SHAPE="640,208,50,25" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#connexion.xhtml" PATH="/connexion.xhtml"
+  SHAPE="72,24,50,25" model-entity="JSFProcessGroup"/>
+ <PROCESS-ITEM NAME="rules:#pages#admin#comptes#liste.xhtml"
+  PATH="/pages/admin/comptes/liste.xhtml" SHAPE="640,40,50,25"
+  model-entity="JSFProcessGroup" persistent="true"/>
+ <PROCESS-ITEM NAME="rules:#pages#user#compte#formulaire.xhtml"
+  PATH="/pages/user/compte/formulaire.xhtml" SHAPE="304,625,0,0" model-entity="JSFProcessGroup"/>
+>>>>>>> master
 </PROCESS>
