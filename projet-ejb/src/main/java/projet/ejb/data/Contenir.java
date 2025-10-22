@@ -3,6 +3,7 @@ package projet.ejb.data;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.*;
 
@@ -42,6 +43,14 @@ public class Contenir implements Serializable {
 		this.culture = culture;
 		this.part = part;
 	}
+	
+	public int getIdContenir() {
+	    return idContenir;
+	}
+
+	public void setIdContenir(int idContenir) {
+	    this.idContenir = idContenir;
+	}
 
 	public Double getPart() {
 		return part;
@@ -66,4 +75,23 @@ public class Contenir implements Serializable {
 	public void setCulture(Culture culture) {
 		this.culture = culture;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(culture, idContenir, parcelle, part);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Contenir other = (Contenir) obj;
+		return Objects.equals(culture, other.culture) && idContenir == other.idContenir
+				&& Objects.equals(parcelle, other.parcelle) && Objects.equals(part, other.part);
+	}
+	
 }

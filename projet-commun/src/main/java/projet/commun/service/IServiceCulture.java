@@ -18,7 +18,11 @@ public interface IServiceCulture {
 
 	List<DtoCulture> listerTout();
 
-	List<DtoCulture> rechercherParNom(String nom);
+	 // --- Recherche ---
+    List<DtoCulture> rechercherParNom(String nom);
 
-	long compter();
+    DtoCulture retrouverParNom(String nom);
+
+    long compter();
+	
 }

@@ -1,62 +1,49 @@
-<?xml version='1.0' encoding='UTF-8' ?>
+<?xml version='1.0' encoding='UTF-8'?> 
 <ui:composition template="/template/page-standard.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+     xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  <f:metadata>
-    <f:viewParam name="id" value="#{modelParcelle.courant.id}" />
-    <f:viewAction action="#{modelParcelle.actualiserCourant()}" />
-  </f:metadata>
+    <f:metadata>
+        <f:viewParam name="id" value="#{modelParcelle.courant.id}" />
+        <f:viewAction action="#{modelParcelle.actualiserCourant()}" />
+    </f:metadata>
 
-  <ui:define name="titre">Parcelle</ui:define>
+    <ui:define name="titre">Formulaire Parcelle</ui:define>
 
-  <ui:define name="contenu">
-    <h:form>
-      <table class="form">
-        <tr>
-          <td><h:outputLabel for="id">Id :</h:outputLabel></td>
-          <td>
-            <h:inputText id="id" size="5" readonly="true" value="#{modelParcelle.courant.id}" />
-            <br/><h:message for="id" errorClass="error"/>
-          </td>
-        </tr>
+    <ui:define name="contenu">
+        <h2>Formulaire de Parcelle</h2>
+        
+        <h:form>
+            <h:panelGrid columns="2" cellpadding="5">
+                <h:outputLabel for="id" value="ID" />
+                <h:inputText id="id" value="#{modelParcelle.courant.id}" readonly="true" />
 
-        <tr>
-          <td><h:outputLabel for="surface">Surface (m²) :</h:outputLabel></td>
-          <td>
-            <h:inputText id="surface" size="10" value="#{modelParcelle.courant.surface}">
-              <f:convertNumber type="number" maxFractionDigits="2"/>
-            </h:inputText>
-            <br/><h:message for="surface" errorClass="error"/>
-          </td>
-        </tr>
+                <h:outputLabel for="surface" value="Surface (m²)" />
+                <h:inputText id="surface" value="#{modelParcelle.courant.surface}" />
 
-        <tr>
-          <td><h:outputLabel for="libre">Libre :</h:outputLabel></td>
-          <td>
-            <h:selectBooleanCheckbox id="libre" value="#{modelParcelle.courant.libre}"/>
-            <br/><h:message for="libre" errorClass="error"/>
-          </td>
-        </tr>
+                <h:outputLabel for="libre" value="Libre" />
+                <h:selectBooleanCheckbox id="libre" value="#{modelParcelle.courant.libre}" />
 
-        <tr>
-          <td><h:outputLabel for="compte">Compte (optionnel) :</h:outputLabel></td>
-          <td>
-            <h:selectOneMenu id="compte" value="#{modelParcelle.courant.idCompte}">
-              <f:selectItem itemValue="#{null}" itemLabel="-- Sans compte --"/>
-              <!--<f:selectItems value="#{modelParcelle.comptes}" var="c"
-                             itemValue="#{c.id}" itemLabel="#{c.pseudo} (id: #{c.id})"/> -->
-            </h:selectOneMenu>
-            <br/><h:message for="compte" errorClass="error"/>
-          </td>
-        </tr>
-      </table>
+                <h:outputLabel for="idCompte" value="Compte (Personne en charge)" />
+                <h:outputText value="#{modelParcelle.courant.idCompte}" />
+            </h:panelGrid>
 
-      <br/>
-      <h:commandButton value="Valider" action="#{modelParcelle.validerMiseAJour()}"/>
-      <h:button value="Retour" outcome="parcelles"/>
-    </h:form>
-  </ui:define>
+            <br />
+            <h:panelGroup>
+                <h:outputLabel value="Cultures dans cette parcelle : " />
+                <h:dataTable value="#{modelContenir.getCulturesDeParcelle(modelParcelle.courant.id)}" var="culture">
+                    <h:column>
+                        <f:facet name="header">Nom de la Culture</f:facet>
+                        #{culture.nom}
+                    </h:column>
+                </h:dataTable>
+            </h:panelGroup>
+
+            <br />
+            <h:commandButton value="Valider" action="#{modelParcelle.validerMiseAJour}" />
+            <h:button value="Retour" outcome="liste" />
+        </h:form>
+    </ui:define>
 </ui:composition>

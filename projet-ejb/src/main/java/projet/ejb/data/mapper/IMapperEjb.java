@@ -64,14 +64,43 @@ public interface IMapperEjb {
     // ============================================================
     // 📌 Parcelle
     // ============================================================
+    @Mapping(target = "compte", source = "idCompte")
     Parcelle map(DtoParcelle source);
+
+    @Mapping(target = "idCompte", source = "compte.id")
     DtoParcelle map(Parcelle source);
+
+    // Méthodes utilitaires Parcelle <-> idParcelle
+    default Parcelle mapIdParcelleToParcelle(Integer idParcelle) {
+        if (idParcelle == null) return null;
+        Parcelle parcelle = new Parcelle();
+        parcelle.setId(idParcelle);
+        return parcelle;
+    }
+
+    default Integer mapParcelleToIdParcelle(Parcelle parcelle) {
+        return (parcelle != null) ? parcelle.getId() : null;
+    }
+
 
     // ============================================================
     // 📌 Culture
     // ============================================================
+    @Mapping(target = "contenirs", ignore = true)
     Culture map(DtoCulture source);
+
     DtoCulture map(Culture source);
+    
+    default Culture mapIdCultureToCulture(Integer idCulture) {
+        if (idCulture == null) return null;
+        Culture culture = new Culture();
+        culture.setId(idCulture);
+        return culture;
+    }
+
+    default Integer mapCultureToIdCulture(Culture culture) {
+        return (culture != null) ? culture.getId() : null;
+    }
 
     // ============================================================
     // 📌 Entretien
@@ -82,6 +111,12 @@ public interface IMapperEjb {
     // ============================================================
     // 📌 Contenir
     // ============================================================
-    Contenir map(DtoContenir source);
+    @Mapping(target = "idParcelle", source = "parcelle.id")
+    @Mapping(target = "idCulture", source = "culture.id")   
     DtoContenir map(Contenir source);
+
+    @Mapping(target = "parcelle", source = "idParcelle")
+    @Mapping(target = "culture", source = "idCulture")
+    Contenir map(DtoContenir source);
+   
 }

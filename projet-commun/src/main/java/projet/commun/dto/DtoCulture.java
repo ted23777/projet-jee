@@ -3,63 +3,69 @@ package projet.commun.dto;
 import java.io.Serializable;
 import java.util.Objects;
 
-
 @SuppressWarnings("serial")
-public class DtoCulture implements Serializable  {
+public class DtoCulture implements Serializable {
 
-	//-------
+	// -------
 	// Champs
-	//-------
-	
+	// -------
+
 	private Integer id;
-    private String nom;
+	private String nom;
 
-    public DtoCulture() {
-        // Constructeur vide requis pour le mapping et la sérialisation
-    }
+	public DtoCulture() {
+		// Constructeur vide requis pour le mapping et la sérialisation
+	}
 
-    public DtoCulture(Integer id, String nom) {
-        this.id = id;
-        this.nom = nom;
-    }
-    
-    // Getters et Setters
+	//instancies des cultures avec juste un nom
+	public DtoCulture(String nom) {
+		this.nom = nom;
+	}
 
-    public Integer getId() {
-        return id;
-    }
+	public DtoCulture(Integer id, String nom) {
+		this.id = id;
+		this.nom = nom;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	// Getters et Setters
 
-    public String getNom() {
-        return nom;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-    
-    //-------
-    // Méthodes utilitaires
-    //-------
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+	public String getNom() {
+		return nom;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof DtoCulture)) return false;
-        DtoCulture other = (DtoCulture) obj;
-        return Objects.equals(id, other.id);
-    }
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
 
-    @Override
-    public String toString() {
-        return String.format("DtoCulture [id=%d, nom=%s]", id, nom);
-    }
+	// -------
+	// Méthodes utilitaires
+	// -------
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof DtoCulture))
+			return false;
+		DtoCulture other = (DtoCulture) obj;
+		return Objects.equals(id, other.id);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("DtoCulture [id=%d, nom=%s]", id, nom);
+	}
 }

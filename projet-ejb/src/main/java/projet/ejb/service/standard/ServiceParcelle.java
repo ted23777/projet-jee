@@ -21,50 +21,42 @@ import projet.ejb.data.mapper.IMapperEjb;
 @Remote
 public class ServiceParcelle implements IServiceParcelle {
 
-    //-------
-    // Champs
-    //-------
-
     @Inject
     private IMapperEjb mapper;
 
     @Inject
     private IDaoParcelle daoParcelle;
 
-    //-------
-    // Actions
-    //-------
-
     @Override
-    public int inserer(DtoParcelle dtoParcelle) {
-        // (Option : ajouter une vérification de validité si souhaité, à la manière de ServiceCompte)
+    public int inserer(DtoParcelle dtoParcelle) throws ExceptionValidation {
+        valider(dtoParcelle);
         return daoParcelle.inserer(mapper.map(dtoParcelle));
     }
 
     @Override
-    public void modifier(DtoParcelle dtoParcelle) {
-        // (Option : ajouter une vérification de validité si souhaité)
+    public void modifier(DtoParcelle dtoParcelle) throws ExceptionValidation {
+        valider(dtoParcelle);
         daoParcelle.modifier(mapper.map(dtoParcelle));
     }
 
     @Override
-    public void supprimer(int idParcelle) {
+    public void supprimer(int idParcelle) throws ExceptionValidation {
         daoParcelle.supprimer(idParcelle);
     }
 
     @Override
     @TransactionAttribute(NOT_SUPPORTED)
     public DtoParcelle retrouver(int idParcelle) {
-        Parcelle Parcelle = daoParcelle.retrouver(idParcelle);
-        return mapper.map(Parcelle);
+        Parcelle parcelle = daoParcelle.retrouver(idParcelle);
+        return mapper.map(parcelle);
     }
 
     @Override
     @TransactionAttribute(NOT_SUPPORTED)
     public List<DtoParcelle> listerTout() {
         List<DtoParcelle> liste = new ArrayList<>();
-        for (Parcelle Parcelle : daoParcelle.listerTout()) {
-            liste.add(mapper.map(Parcelle));
+        for (Parcelle p : daoParcelle.listerTout()) {
+            liste.add(mapper.map(p));
         }
         return liste;
     }
@@ -73,26 +65,65 @@ public class ServiceParcelle implements IServiceParcelle {
     @TransactionAttribute(NOT_SUPPORTED)
     public List<DtoParcelle> listerParCompte(int idCompte) {
         List<DtoParcelle> liste = new ArrayList<>();
-        for (Parcelle parcelle : daoParcelle.listerParCompte(idCompte)) {
-            liste.add(mapper.map(parcelle));
+        for (Parcelle p : daoParcelle.listerParCompte(idCompte)) {
+            liste.add(mapper.map(p));
         }
         return liste;
     }
-    
+
     @Override
     @TransactionAttribute(NOT_SUPPORTED)
     public List<DtoParcelle> listerLibres() {
         List<DtoParcelle> liste = new ArrayList<>();
-        for (Parcelle parcelle : daoParcelle.listerLibres()) {
-            liste.add(mapper.map(parcelle));
+        for (Parcelle p : daoParcelle.listerLibres()) {
+            liste.add(mapper.map(p));
         }
         return liste;
     }
-     
-    
-    //-------
-    // Méthodes privées
-    //-------
+
+    @Override
+    @TransactionAttribute(NOT_SUPPORTED)
+    public List<DtoParcelle> listerOccupees() {
+        List<DtoParcelle> liste = new ArrayList<>();
+        for (Parcelle p : daoParcelle.listerOccupees()) {
+            liste.add(mapper.map(p));
+        }
+        return liste;
+    }
+
+    @Override
+    public long compter() {
+        return daoParcelle.compter();
+    }
+
+    @Override
+    public void reserverParCompte(int idParcelle, int idCompte) throws ExceptionValidation {
+        if (!daoParcelle.estLibre(idParcelle)) {
+            throw new ExceptionValidation("La parcelle n’est pas libre.");
+        }
+        daoParcelle.reserverParCompte(idParcelle, idCompte);
+    }
+
+    @Override
+    public void libererParcelle(int idParcelle) {
+        daoParcelle.libererParcelle(idParcelle);
+    }
+
+    @Override
+    public void occuperParcelle(int idParcelle) {
+        daoParcelle.occuperParcelle(idParcelle);
+    }
+
+    @Override
+    public boolean estLibre(int idParcelle) {
+        return daoParcelle.estLibre(idParcelle);
+    }
+
+    @Override
+    public boolean appartientACompte(int idParcelle, int idCompte) {
+        return daoParcelle.appartientACompte(idParcelle, idCompte);
+    }
+
     private void valider(DtoParcelle dto) throws ExceptionValidation {
         if (dto == null) {
             throw new ExceptionValidation("Les données sont obligatoires.");

@@ -1,6 +1,7 @@
 package projet.jsf.model.standard;
 
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,9 +11,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import projet.commun.dto.DtoCompte;
+import projet.commun.dto.DtoParcelle;
 import projet.commun.exception.ExceptionValidation;
 import projet.commun.service.IServiceCompte;
 import projet.jsf.data.Compte;
+import projet.jsf.data.Parcelle;
 import projet.jsf.data.mapper.IMapper;
 import projet.jsf.util.UtilJsf;
 
@@ -29,6 +32,8 @@ public class ModelCompte implements Serializable {
 	private List<Compte>	liste;
 	
 	private Compte			courant;
+	
+	private List<Parcelle> parcellesDuCompte;
 	
 	@EJB
 	private IServiceCompte	serviceCompte;
@@ -57,6 +62,15 @@ public class ModelCompte implements Serializable {
 			return courant;
 		}
 	
+		 public List<Parcelle> getParcellesDuCompte() {
+		        if (courant != null && courant.getId() != null) {
+		            parcellesDuCompte = new ArrayList<>();
+		            for (DtoParcelle dto : serviceCompte.listerParcellesDuCompte(courant.getId())) {
+		                parcellesDuCompte.add(mapper.map(dto));
+		            }
+		        }
+		        return parcellesDuCompte;
+		    }
 	//-------
 	// Initialisaitons
 	//-------
@@ -103,5 +117,24 @@ public class ModelCompte implements Serializable {
 		}
 		return null;
 	}
+	
+	  public String authentifier(String email, String motDePasse) {
+	        DtoCompte dto = serviceCompte.validerAuthentification(email, motDePasse);
+	        if (dto == null) {
+	            UtilJsf.messageError("Identifiants invalides. Vérifiez votre email ou mot de passe.");
+	            return null;
+	        }
+	        courant = mapper.map(dto);
+	        UtilJsf.messageInfo("Bienvenue " + courant.getPrenom() + " !");
+	        return "accueil"; // page d’accueil utilisateur
+	    }
+
+	    public boolean estAdmin() {
+	        return courant != null && courant.isAdmin();
+	    }
+
+	    public void actualiserListe() {
+	        liste = null; // forcera le rechargement au prochain getListe()
+	    }
 	
 }

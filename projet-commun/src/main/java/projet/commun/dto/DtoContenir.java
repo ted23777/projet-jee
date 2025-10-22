@@ -10,7 +10,8 @@ public class DtoContenir implements Serializable  {
 	//-------
 	// Champs
 	//-------
-	
+	private Integer idContenir;
+
 	private Integer idParcelle;
     private Integer idCulture;
     private Double part;
@@ -26,7 +27,14 @@ public class DtoContenir implements Serializable  {
 	}
 
     // Getters et Setters
-    
+	public Integer getIdContenir() {
+		return idContenir;
+	}
+
+	public void setIdContenir(Integer idContenir) {
+		this.idContenir = idContenir;
+	}
+
 	public Integer getIdParcelle() {
         return idParcelle;
     }

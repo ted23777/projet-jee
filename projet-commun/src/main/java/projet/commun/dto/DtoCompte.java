@@ -24,6 +24,23 @@ public class DtoCompte implements Serializable  {
 	
 	private Double 		solde;
 	
+	//Constructeurs
+	public DtoCompte() {
+	    
+	}
+
+	public DtoCompte(int id, String nom, String prenom, String email, String motDePasse, boolean admin, Double solde) {
+	    this.id = id;
+	    this.nom = nom;
+	    this.prenom = prenom;
+	    this.adresseMail = email;
+	    this.motDePasse = motDePasse;
+	    this.admin = admin;
+	    this.solde = solde;
+	}
+
+	
+	
 	//-------
 	// Getters & setters
 	//-------

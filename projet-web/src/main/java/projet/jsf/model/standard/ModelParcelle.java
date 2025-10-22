@@ -3,15 +3,20 @@ package projet.jsf.model.standard;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import projet.commun.dto.*;
+import projet.commun.dto.DtoCompte;
+import projet.commun.dto.DtoParcelle;
 import projet.commun.exception.ExceptionValidation;
-import projet.commun.service.*;
-import projet.jsf.data.*;
+import projet.commun.service.IServiceCompte;
+import projet.commun.service.IServiceContenir;
+import projet.commun.service.IServiceParcelle;
+import projet.jsf.data.Contenir;
+import projet.jsf.data.Parcelle;
 import projet.jsf.data.mapper.IMapper;
 import projet.jsf.util.UtilJsf;
 
@@ -20,387 +25,211 @@ import projet.jsf.util.UtilJsf;
 @ViewScoped
 public class ModelParcelle implements Serializable {
 
-	// ========================================
-	// === PARTIE PARCELLE (ancienne classe) ===
-	// ========================================
+    //-------
+    // Champs
+    //-------
+    private List<Parcelle> liste;
+    private Parcelle courant;
 
-	private List<Parcelle> liste;
-	private Parcelle courant;
-	private List<DtoCompte> comptes; // pour la combo
+    @EJB
+    private IServiceParcelle serviceParcelle;
+    
+    @EJB
+    private IServiceCompte serviceCompte;  // Ajouter cette injection
 
-	@EJB
-	private IServiceParcelle serviceParcelle;
-	@EJB
-	private IServiceCompte serviceCompte;
+    @Inject
+    private IMapper mapper;
 
-	// ========================================
-	// === PARTIE CONTENIR (fusionnée) ===
-	// ========================================
+    //-------
+    // Getters
+    //-------
+    public List<Parcelle> getListe() {
+        if (liste == null) {
+            liste = new ArrayList<>();
+            for (DtoParcelle dto : serviceParcelle.listerTout()) {
+                liste.add(mapper.map(dto));
+            }
+        }
+        return liste;
+    }
 
-	private List<Contenir> listeContenir;
-	private Contenir courantContenir;
-	private Integer idParcelleFiltre;
-	private Integer idCultureFiltre;
+    public Parcelle getCourant() {
+        if (courant == null) {
+            courant = new Parcelle();
+        }
+        return courant;
+    }
 
-	private List<Parcelle> listeParcelles;
-	private List<Culture> listeCultures;
+    //-------
+    // Initialisations
+    //-------
+    public String actualiserCourant() {
+        if (courant != null && courant.getId() != null) {
+            DtoParcelle dto = serviceParcelle.retrouver(courant.getId());
+            if (dto == null) {
+                UtilJsf.messageError("La parcelle demandée n'existe pas.");
+                return "liste";
+            } else {
+                courant = mapper.map(dto);
+            }
+        }
+        return null;
+    }
 
-	@EJB
-	private IServiceContenir serviceContenir;
-	@EJB
-	private IServiceCulture serviceCulture;
+    //-------
+    // Actions principales
+    //-------
+    public String validerMiseAJour() {
+        try {
+            if (courant.getId() == null) {
+                serviceParcelle.inserer(mapper.map(courant));
+            } else {
+                serviceParcelle.modifier(mapper.map(courant));
+            }
+            UtilJsf.messageInfo("Mise à jour effectuée avec succès.");
+            liste = null;
+            return "liste";
+        } catch (ExceptionValidation e) {
+            UtilJsf.messageError(e);
+            return null;
+        }
+    }
 
-	@Inject
-	private IMapper mapper;
+    public String supprimer(Parcelle item) {
+        try {
+            serviceParcelle.supprimer(item.getId());
+            getListe().remove(item);
+            UtilJsf.messageInfo("Suppression effectuée avec succès.");
+        } catch (ExceptionValidation e) {
+            UtilJsf.messageError(e);
+        }
+        return null;
+    }
 
-	// === Pour la gestion des cultures d'une parcelle ===
-	private Integer idParcelle;
-	private String nomParcelleSelectionnee;
-	private double surfaceParcelleSelectionnee;
-	private List<Contenir> listePourParcelle;
+    //-------
+    // Actions spécifiques MVP
+    //-------
 
-	private Double partOccupee = 0.0;
-	private Double partRestante = 100.0;
+    public List<Parcelle> getParcellesLibres() {
+        List<Parcelle> parcellesLibres = new ArrayList<>();
+        for (DtoParcelle dto : serviceParcelle.listerLibres()) {
+            parcellesLibres.add(mapper.map(dto));
+        }
+        return parcellesLibres;
+    }
 
-	private Integer idCultureAAjouter;
-	private Double partAAjouterPourcent;
+    public List<Parcelle> getParcellesOccupees() {
+        List<Parcelle> parcellesOccupees = new ArrayList<>();
+        for (DtoParcelle dto : serviceParcelle.listerOccupees()) {
+            parcellesOccupees.add(mapper.map(dto));
+        }
+        return parcellesOccupees;
+    }
 
-	// ==================================================
-	// === MÉTHODES ISSUES DE ModelParcelle ORIGINEL ===
-	// ==================================================
+    public boolean estLibre(Parcelle p) {
+        return serviceParcelle.estLibre(p.getId());
+    }
 
-	public List<Parcelle> getListe() {
-		if (liste == null) {
-			liste = new ArrayList<>();
-			for (DtoParcelle dto : serviceParcelle.listerTout()) {
-				liste.add(mapper.map(dto));
-			}
-		}
-		return liste;
+    public String libererParcelle(Parcelle p) {
+        serviceParcelle.libererParcelle(p.getId());
+        UtilJsf.messageInfo("Parcelle libérée avec succès.");
+        liste = null;
+        return null;
+    }
+
+    public String occuperParcelle(Parcelle p) {
+        serviceParcelle.occuperParcelle(p.getId());
+        UtilJsf.messageInfo("Parcelle marquée comme occupée.");
+        liste = null;
+        return null;
+    }
+    
+  //-------
+ // Méthodes pour les vues
+ //-------
+
+ /**
+  * Récupère toutes les associations contenir
+  */
+ public List<Contenir> getListeContenir() {
+     // Appel au service pour récupérer toutes les associations
+     List<Contenir> contenirs = new ArrayList<>();
+     // TODO: injecter IServiceContenir et appeler listerTout()
+     return contenirs;
+ }
+
+ /**
+  * Récupère le nom d'une parcelle
+  */
+ public String getNomParcelle(Integer idParcelle) {
+     if (idParcelle == null) return "";
+     Parcelle p = liste.stream()
+         .filter(parcelle -> parcelle.getId().equals(idParcelle))
+         .findFirst()
+         .orElse(null);
+     return p != null ? "Parcelle #" + p.getId() + " (" + p.getSurface() + " m²)" : "Parcelle #" + idParcelle;
+ }
+
+ /**
+  * Récupère le nom d'une culture
+  */
+ public String getNomCulture(Integer idCulture) {
+     // TODO: injecter ModelCulture ou IServiceCulture
+     return "Culture #" + idCulture;
+ }
+
+ /**
+  * Calcule la part restante en pourcentage
+  */
+ public Double getPartRestantePourcent() {
+     // TODO: calculer avec le service
+     return 0.0;
+ }
+
+ /**
+  * Supprime une culture d'une parcelle
+  */
+ public String supprimerCulture(Integer idParcelle, Integer idCulture) {
+     try {
+         // TODO: appeler le service pour supprimer l'association
+         UtilJsf.messageInfo("Culture supprimée avec succès.");
+         return null;
+     } catch (Exception e) {
+         UtilJsf.messageError("Erreur lors de la suppression : " + e.getMessage());
+         return null;
+     }
+ }
+ 
+ /**
+  * Récupère le nom du propriétaire de la parcelle
+  */
+ public String getNomProprietaire(Integer idCompte) {
+     if (idCompte == null) {
+         return "Non attribuée";
+     }
+     try {
+         DtoCompte compte = serviceCompte.retrouver(idCompte);
+         if (compte != null) {
+             return compte.getNom() + " " + compte.getPrenom();
+         }
+     } catch (Exception e) {
+         // Ignorer
+     }
+     return "Compte #" + idCompte;
+ }
+
+ /**
+  * Calcule la surface restante en m²
+  *////AVOIR
+ public double getSurfaceRestante(Parcelle parcelle) {
+     if (parcelle == null) return 0.0;
+     Double partRestante = null;
+	try {
+		partRestante = IServiceContenir.getPartRestante(parcelle.getId());
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
-
-	public Parcelle getCourant() {
-		if (courant == null) {
-			courant = new Parcelle();
-			courant.setLibre(true);
-		}
-		return courant;
-	}
-
-	public List<DtoCompte> getComptes() {
-		if (comptes == null) {
-			comptes = serviceCompte.listerTout();
-		}
-		return comptes;
-	}
-
-	public String actualiserCourant() {
-		if (courant != null && courant.getId() != null) {
-			DtoParcelle dto = serviceParcelle.retrouver(courant.getId());
-			if (dto == null) {
-				UtilJsf.messageError("La parcelle demandée n'existe pas.");
-				return "liste";
-			} else {
-				courant = mapper.map(dto);
-			}
-		}
-		return null;
-	}
-
-	public String validerMiseAJour() {
-		try {
-			if (courant.getSurface() <= 0) {
-				UtilJsf.messageError("La surface doit être > 0.");
-				return null;
-			}
-			if (courant.getId() == null) {
-				serviceParcelle.inserer(mapper.map(courant));
-			} else {
-				serviceParcelle.modifier(mapper.map(courant));
-			}
-			UtilJsf.messageInfo("Mise à jour effectuée avec succès.");
-			liste = null;
-			return "liste";
-		} catch (Exception e) {
-			UtilJsf.messageError(e);
-			return null;
-		}
-	}
-
-	public String supprimer(Parcelle item) {
-		try {
-			serviceParcelle.supprimer(item.getId());
-			if (liste != null) {
-				liste.remove(item);
-			}
-			UtilJsf.messageInfo("Suppression effectuée avec succès.");
-		} catch (Exception e) {
-			UtilJsf.messageError(e);
-		}
-		return null;
-	}
-
-	// ==================================================
-	// === MÉTHODES ISSUES DE ModelContenir (fusion) ===
-	// ==================================================
-
-	public List<Contenir> getListeContenir() {
-		if (listeContenir == null) {
-			chargerListeContenir();
-		}
-		return listeContenir;
-	}
-
-	private void chargerListeContenir() {
-		try {
-			listeContenir = new ArrayList<>();
-			List<DtoContenir> dtos;
-			if (idParcelleFiltre != null) {
-				dtos = serviceContenir.listerParParcelle(idParcelleFiltre);
-			//} else if (idCultureFiltre != null) {
-			//	dtos = serviceContenir.listerParCulture(idCultureFiltre);
-			} else {
-				dtos = serviceContenir.listerTout();
-			}
-			for (DtoContenir dto : dtos) {
-				listeContenir.add(mapper.map(dto));
-			}
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors du chargement des associations : " + e.getMessage());
-			listeContenir = new ArrayList<>();
-		}
-	}
-
-	public Contenir getCourantContenir() {
-		if (courantContenir == null)
-			courantContenir = new Contenir();
-		return courantContenir;
-	}
-
-	public String validerMiseAJourContenir() {
-		try {
-			DtoContenir dto = mapper.map(courantContenir);
-			DtoContenir existant = serviceContenir.retrouver(courantContenir.getIdParcelle(),
-					courantContenir.getIdCulture());
-			if (existant == null) {
-				serviceContenir.inserer(dto);
-				UtilJsf.messageInfo("Association créée avec succès.");
-			} else {
-				serviceContenir.modifier(dto);
-				UtilJsf.messageInfo("Association modifiée avec succès.");
-			}
-			listeContenir = null;
-			return "liste";
-		} catch (ExceptionValidation e) {
-			UtilJsf.messageError(e.getMessage());
-			return null;
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors de l'enregistrement : " + e.getMessage());
-			return null;
-		}
-	}
-
-	public String supprimerContenir(Contenir item) {
-		try {
-			serviceContenir.supprimer(item.getIdParcelle(), item.getIdCulture());
-			if (listeContenir != null)
-				listeContenir.remove(item);
-			UtilJsf.messageInfo("Suppression de l'association réussie.");
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors de la suppression : " + e.getMessage());
-		}
-		return null;
-	}
-
-	// === Filtres et chargement ===
-
-	public void filtrerParParcelle() {
-		idCultureFiltre = null;
-		listeContenir = null;
-		getListeContenir();
-	}
-
-	public void filtrerParCulture() {
-		idParcelleFiltre = null;
-		listeContenir = null;
-		getListeContenir();
-	}
-
-	public void reinitialiserFiltres() {
-		idParcelleFiltre = null;
-		idCultureFiltre = null;
-		listeContenir = null;
-		getListeContenir();
-	}
-
-	// === Fonctions pour l'affichage ===
-
-	public String getNomParcelle(Integer idParcelle) {
-		if (idParcelle == null)
-			return "";
-		for (Parcelle p : getListeParcelles()) {
-			if (p.getId().equals(idParcelle)) {
-				return "Parcelle #" + p.getId() + " (" + p.getSurface() + " m²)";
-			}
-		}
-		return "Parcelle #" + idParcelle;
-	}
-
-	public String getNomCulture(Integer idCulture) {
-		if (idCulture == null)
-			return "";
-		for (Culture c : getListeCultures()) {
-			if (c.getId().equals(idCulture))
-				return c.getNom();
-		}
-		return "Culture #" + idCulture;
-	}
-
-	// === Gestion spécifique à une parcelle ===
-
-	public void actualiserPourParcelle() {
-		if (idParcelle == null)
-			return;
-		try {
-			DtoParcelle dtoParcelle = serviceParcelle.retrouver(idParcelle);
-			Parcelle p = mapper.map(dtoParcelle);
-			nomParcelleSelectionnee = "Parcelle #" + p.getId();
-			surfaceParcelleSelectionnee = p.getSurface();
-
-			List<DtoContenir> dtos = serviceContenir.listerParParcelle(idParcelle);
-			listePourParcelle = new ArrayList<>();
-			for (DtoContenir dto : dtos) {
-				listePourParcelle.add(mapper.map(dto));
-			}
-
-			double somme = 0;
-			for (Contenir c : listePourParcelle)
-				somme += c.getPart();
-			partOccupee = somme * 100.0;
-			partRestante = Math.max(0.0, 100.0 - partOccupee);
-
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur de chargement : " + e.getMessage());
-			listePourParcelle = new ArrayList<>();
-		}
-	}
-
-	public String ajouterCulturePourParcelle() {
-		try {
-			if (idCultureAAjouter == null || partAAjouterPourcent == null) {
-				UtilJsf.messageError("Veuillez choisir une culture et saisir une part.");
-				return null;
-			}
-
-			double partDecimal = partAAjouterPourcent / 100.0;
-			if (partDecimal <= 0) {
-				UtilJsf.messageError("La part doit être supérieure à 0.");
-				return null;
-			}
-
-			if (partDecimal * 100.0 > partRestante + 0.001) {
-				UtilJsf.messageError(
-						"Surface restante insuffisante (" + String.format("%.2f", partRestante) + "% restantes).");
-				return null;
-			}
-
-			DtoContenir dto = new DtoContenir();
-			dto.setIdParcelle(idParcelle);
-			dto.setIdCulture(idCultureAAjouter);
-			dto.setPart(partDecimal);
-
-			serviceContenir.inserer(dto);
-			UtilJsf.messageInfo("Culture ajoutée à la parcelle avec succès.");
-			idCultureAAjouter = null;
-			partAAjouterPourcent = null;
-			actualiserPourParcelle();
-
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors de l'ajout : " + e.getMessage());
-		}
-		return null;
-	}
-
-	public String supprimerCulture(int idParcelle, int idCulture) {
-		try {
-			serviceContenir.supprimer(idParcelle, idCulture);
-			UtilJsf.messageInfo("Association supprimée.");
-			actualiserPourParcelle();
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors de la suppression : " + e.getMessage());
-		}
-		return null;
-	}
-
-	// === Utilitaires ===
-
-	public boolean isParcellePleine() {
-		return partRestante <= 0.0001;
-	}
-
-	public double getPartOccupeePourcent() {
-		return partOccupee;
-	}
-
-	public double getPartRestantePourcent() {
-		return partRestante;
-	}
-
-	public List<Parcelle> getListeParcelles() {
-		if (listeParcelles == null) {
-			listeParcelles = new ArrayList<>();
-			for (DtoParcelle dto : serviceParcelle.listerTout()) {
-				listeParcelles.add(mapper.map(dto));
-			}
-		}
-		return listeParcelles;
-	}
-
-	public List<Culture> getListeCultures() {
-		if (listeCultures == null) {
-			listeCultures = new ArrayList<>();
-			for (DtoCulture dto : serviceCulture.listerTout()) {
-				listeCultures.add(mapper.map(dto));
-			}
-		}
-		return listeCultures;
-	}
-
-	// === Getters / Setters ===
-
-	public Integer getIdParcelle() {
-		return idParcelle;
-	}
-
-	public void setIdParcelle(Integer idParcelle) {
-		this.idParcelle = idParcelle;
-	}
-
-	public List<Contenir> getListePourParcelle() {
-		return listePourParcelle;
-	}
-
-	public Integer getIdCultureAAjouter() {
-		return idCultureAAjouter;
-	}
-
-	public void setIdCultureAAjouter(Integer v) {
-		idCultureAAjouter = v;
-	}
-
-	public Double getPartAAjouterPourcent() {
-		return partAAjouterPourcent;
-	}
-
-	public void setPartAAjouterPourcent(Double v) {
-		partAAjouterPourcent = v;
-	}
-
-	public String getNomParcelleSelectionnee() {
-		return nomParcelleSelectionnee;
-	}
-
-	public double getSurfaceParcelleSelectionnee() {
-		return surfaceParcelleSelectionnee;
-	}
+     return (parcelle.getSurface() * partRestante) / 100.0;
+ }
 }

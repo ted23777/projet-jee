@@ -10,9 +10,11 @@ public class Contenir implements Serializable {
     // Champs
     //-------
 
-    private Integer idParcelle;
+	private int idContenir;
+	
+    private Integer parcelle;
 
-    private Integer idCulture;
+    private Integer culture;
 
     private Double part;
     
@@ -20,9 +22,9 @@ public class Contenir implements Serializable {
     	
     }
 
-    public Contenir(Integer idParcelle, Integer idCulture, Double part) {
-		this.idParcelle = idParcelle;
-		this.idCulture = idCulture;
+    public Contenir(Integer parcelle, Integer culture, Double part) {
+		this.parcelle = parcelle;
+		this.culture = culture;
 		this.part = part;
 	}
 
@@ -31,19 +33,19 @@ public class Contenir implements Serializable {
     //-------
 
     public Integer getIdParcelle() {
-        return idParcelle;
+        return parcelle;
     }
 
-    public void setIdParcelle(Integer idParcelle) {
-        this.idParcelle = idParcelle;
+    public void setIdParcelle(Integer parcelle) {
+        this.parcelle = parcelle;
     }
 
     public Integer getIdCulture() {
-        return idCulture;
+        return culture;
     }
 
-    public void setIdCulture(Integer idCulture) {
-        this.idCulture = idCulture;
+    public void setIdCulture(Integer culture) {
+        this.culture = culture;
     }
 
     public Double getPart() {
@@ -53,26 +55,34 @@ public class Contenir implements Serializable {
     public void setPart(Double part) {
         this.part = part;
     }
+    
+    public int getIdContenir() {
+	    return idContenir;
+	}
+
+	public void setIdContenir(int idContenir) {
+	    this.idContenir = idContenir;
+	}
 
     //-------
     // hashCode() & equals()
     //-------
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(idParcelle, idCulture);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(culture, idContenir, parcelle, part);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        var other = (Contenir) obj;
-        return Objects.equals(idParcelle, other.idParcelle) &&
-               Objects.equals(idCulture, other.idCulture);
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Contenir other = (Contenir) obj;
+		return Objects.equals(culture, other.culture) && idContenir == other.idContenir
+				&& Objects.equals(parcelle, other.parcelle) && Objects.equals(part, other.part);
+	}
 }

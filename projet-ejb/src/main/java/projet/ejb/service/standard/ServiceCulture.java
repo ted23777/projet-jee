@@ -4,7 +4,6 @@ import static javax.ejb.TransactionAttributeType.NOT_SUPPORTED;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
@@ -12,6 +11,7 @@ import javax.ejb.TransactionAttribute;
 import javax.inject.Inject;
 
 import projet.commun.dto.DtoCulture;
+import projet.commun.exception.ExceptionValidation;
 import projet.commun.service.IServiceCulture;
 import projet.ejb.dao.IDaoCulture;
 import projet.ejb.data.Culture;
@@ -21,34 +21,26 @@ import projet.ejb.data.mapper.IMapperEjb;
 @Remote
 public class ServiceCulture implements IServiceCulture {
 
-    //-------
-    // Champs
-    //-------
-
     @Inject
     private IMapperEjb mapper;
 
     @Inject
     private IDaoCulture daoCulture;
 
-    //-------
-    // Actions
-    //-------
-
     @Override
-    public int inserer(DtoCulture dtoCulture) {
-        // (Option : ajouter une vérification de validité si souhaité, à la manière de ServiceCompte)
+    public int inserer(DtoCulture dtoCulture) throws ExceptionValidation {
+        valider(dtoCulture);
         return daoCulture.inserer(mapper.map(dtoCulture));
     }
 
     @Override
-    public void modifier(DtoCulture dtoCulture) {
-        // (Option : ajouter une vérification de validité si souhaité)
+    public void modifier(DtoCulture dtoCulture) throws ExceptionValidation {
+        valider(dtoCulture);
         daoCulture.modifier(mapper.map(dtoCulture));
     }
 
     @Override
-    public void supprimer(int idCulture) {
+    public void supprimer(int idCulture) throws ExceptionValidation {
         daoCulture.supprimer(idCulture);
     }
 
@@ -63,25 +55,37 @@ public class ServiceCulture implements IServiceCulture {
     @TransactionAttribute(NOT_SUPPORTED)
     public List<DtoCulture> listerTout() {
         List<DtoCulture> liste = new ArrayList<>();
-        for (Culture culture : daoCulture.listerTout()) {
-            liste.add(mapper.map(culture));
+        for (Culture c : daoCulture.listerTout()) {
+            liste.add(mapper.map(c));
         }
         return liste;
-    }
-    
-    @Override
-    @TransactionAttribute(NOT_SUPPORTED)
-    public List<DtoCulture> rechercherParNom(String nom) {
-        String crit = nom == null ? "" : nom.trim();
-        if (crit.isEmpty()) {
-            return listerTout();
-        }
-        return daoCulture.rechercherParNom(crit).stream().map(mapper::map).collect(Collectors.toList());
     }
 
     @Override
     @TransactionAttribute(NOT_SUPPORTED)
+    public List<DtoCulture> rechercherParNom(String nom) {
+        String crit = nom == null ? "" : nom.trim().toLowerCase();
+        List<DtoCulture> liste = new ArrayList<>();
+        for (Culture c : daoCulture.rechercherParNom(crit)) {
+            liste.add(mapper.map(c));
+        }
+        return liste;
+    }
+
+    @Override
     public long compter() {
         return daoCulture.compter();
+    }
+
+    @Override
+    public DtoCulture retrouverParNom(String nom) {
+        Culture culture = daoCulture.retrouverParNom(nom);
+        return mapper.map(culture);
+    }
+
+    private void valider(DtoCulture dto) throws ExceptionValidation {
+        if (dto == null) throw new ExceptionValidation("Les données sont obligatoires.");
+        if (dto.getNom() == null || dto.getNom().isEmpty())
+            throw new ExceptionValidation("Le nom de la culture est obligatoire.");
     }
 }

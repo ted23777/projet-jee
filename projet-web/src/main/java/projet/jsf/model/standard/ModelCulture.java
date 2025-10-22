@@ -11,7 +11,7 @@ import javax.inject.Named;
 
 import projet.commun.dto.DtoCulture;
 import projet.commun.exception.ExceptionValidation;
-import projet.commun.service.IServiceCulture;   // <-- même package que pour Compte (commun.service)
+import projet.commun.service.IServiceCulture;
 import projet.jsf.data.Culture;
 import projet.jsf.data.mapper.IMapper;
 import projet.jsf.util.UtilJsf;
@@ -21,147 +21,86 @@ import projet.jsf.util.UtilJsf;
 @ViewScoped
 public class ModelCulture implements Serializable {
 
-	//-------
-	// Champs
-	//-------
-	
-	private List<Culture>	liste;
-	private Culture			courant;
-	private String 			critereRecherche;
+    private List<Culture> liste;
+    private Culture courant;
 
-	@EJB
-	private IServiceCulture	serviceCulture;
+    @EJB
+    private IServiceCulture serviceCulture;
 
-	@Inject
-	private IMapper			mapper;
+    @Inject
+    private IMapper mapper;
 
-	//-------
-	// Getters
-	//-------
-
-	public List<Culture> getListe() {
-		if (liste == null) {
-			chargerListe();
-		}
-		return liste;
-	}
-
-	public Culture getCourant() {
-		if (courant == null) {
-			courant = new Culture();
-		}
-		return courant;
-	}
-	
-	public void setCourant(Culture courant) {
-        this.courant = courant;
-    }
-	
-	public String getCritereRecherche() {
-        return critereRecherche;
+    //-------
+    // Getters
+    //-------
+    public List<Culture> getListe() {
+        if (liste == null) {
+            liste = new ArrayList<>();
+            for (DtoCulture dto : serviceCulture.listerTout()) {
+                liste.add(mapper.map(dto));
+            }
+        }
+        return liste;
     }
 
-    public void setCritereRecherche(String critereRecherche) {
-        this.critereRecherche = critereRecherche;
+    public Culture getCourant() {
+        if (courant == null) {
+            courant = new Culture();
+        }
+        return courant;
     }
 
-	//------------------
-	// Méthodes internes
-	//------------------
+    //-------
+    // Initialisations
+    //-------
+    public String actualiserCourant() {
+        if (courant != null && courant.getId() != null) {
+            DtoCulture dto = serviceCulture.retrouver(courant.getId());
+            if (dto == null) {
+                UtilJsf.messageError("La culture demandée n'existe pas.");
+                return "liste";
+            } else {
+                courant = mapper.map(dto);
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Charge la liste selon le critère de recherche s'il est renseigné,
-	 * sinon charge toute la liste.
-	 */
-	private void chargerListe() {
-		try {
-			liste = new ArrayList<>();
-			List<DtoCulture> dtos;
+    //-------
+    // Actions
+    //-------
+    public String validerMiseAJour() {
+        try {
+            if (courant.getId() == null) {
+                serviceCulture.inserer(mapper.map(courant));
+            } else {
+                serviceCulture.modifier(mapper.map(courant));
+            }
+            UtilJsf.messageInfo("Culture enregistrée avec succès.");
+            liste = null;
+            return "liste";
+        } catch (ExceptionValidation e) {
+            UtilJsf.messageError(e);
+            return null;
+        }
+    }
 
-			if (critereRecherche != null && !critereRecherche.trim().isEmpty()) {
-				dtos = serviceCulture.rechercherParNom(critereRecherche.trim());
-			} else {
-				dtos = serviceCulture.listerTout();
-			}
-			for (DtoCulture dto : dtos) {
-				liste.add(mapper.map(dto));
-			}
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors du chargement des cultures : " + e.getMessage());
-			liste = new ArrayList<>();
-		}
-	}
+    public String supprimer(Culture item) {
+        try {
+            serviceCulture.supprimer(item.getId());
+            getListe().remove(item);
+            UtilJsf.messageInfo("Culture supprimée avec succès.");
+        } catch (ExceptionValidation e) {
+            UtilJsf.messageError(e);
+        }
+        return null;
+    }
 
-	//------------------
-	// Initialisations
-	//------------------
-
-	public String actualiserCourant() {
-		if (courant != null && courant.getId() != null) {
-			DtoCulture dto = serviceCulture.retrouver(courant.getId());
-			if (dto == null) {
-				UtilJsf.messageError("La culture demandée n'existe pas.");
-				return "liste";
-			} else {
-				courant = mapper.map(dto);
-			}
-		}
-		return null;
-	}
-
-	//-------
-	// Actions
-	//-------
-
-	public String validerMiseAJour() {
-		try {
-			if (courant.getId() == null) {
-				serviceCulture.inserer(mapper.map(courant));
-			} else {
-				serviceCulture.modifier(mapper.map(courant));
-			}
-			UtilJsf.messageInfo("Mise à jour effectuée avec succès.");
-			// Invalide le cache local pour refléter les changements au prochain affichage
-			liste = null;
-			return "liste";
-		} catch (ExceptionValidation e) {
-			UtilJsf.messageError(e.getMessage());
-			return null;
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors de l'enregistrement : " + e.getMessage());
-			return null;
-		}
-	}
-
-	public String supprimer(Culture item) {
-		try {
-			serviceCulture.supprimer(item.getId());
-			if (liste != null) {
-				liste.remove(item);
-			}
-			UtilJsf.messageInfo("Suppression effectuée avec succès.");
-		} catch (ExceptionValidation e) {
-			UtilJsf.messageError(e.getMessage());
-		} catch (Exception e) {
-			UtilJsf.messageError("Erreur lors de la suppression : " + e.getMessage());
-		}
-		return null;
-	}
-
-	//-------
-	// Recherche / Filtrage
-	//-------
-
-	/** Lance une recherche par nom (utilise critereRecherche). */
-	public void rechercher() {
-		liste = null;   // force le rechargement via getListe()
-		getListe();
-	}
-
-	/** Réinitialise le critère et recharge la liste complète. */
-	public void reinitialiserRecherche() {
-		critereRecherche = null;
-		liste = null;
-		getListe();
-	}
+    public List<Culture> rechercher(String nom) {
+        List<Culture> resultats = new ArrayList<>();
+        for (DtoCulture dto : serviceCulture.rechercherParNom(nom)) {
+            resultats.add(mapper.map(dto));
+        }
+        return resultats;
+    }
 }
