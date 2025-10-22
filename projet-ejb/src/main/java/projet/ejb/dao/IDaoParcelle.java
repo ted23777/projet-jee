@@ -40,9 +40,7 @@ public interface IDaoParcelle {
 	    boolean appartientACompte(int idParcelle, int idCompte);
 	    
 	    void changerStatut(int idParcelle, boolean libre);
-=======
-    List<Parcelle> listerTout();
 
-	List<Parcelle> listerParIdCompte(int idCompte);
->>>>>>> master
+	    List<Parcelle> listerParIdCompte(int idCompte);
+
 }

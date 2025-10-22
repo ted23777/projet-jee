@@ -133,8 +133,9 @@ public class DaoParcelle implements IDaoParcelle {
         if (parcelle != null) {
             parcelle.setLibre(libre);
             em.merge(parcelle);
+            }
         }
-=======
+
     
     @Override
     public List<Parcelle> listerParIdCompte(int idCompte) {
@@ -142,6 +143,6 @@ public class DaoParcelle implements IDaoParcelle {
         var query = em.createQuery(jpql, Parcelle.class);
         query.setParameter("idCompte", idCompte);
         return query.getResultList();
->>>>>>> master
+
     }
 }
