@@ -11,11 +11,11 @@
     <h2>Catalogue des parcelles</h2>
 
     <h:form>
-      <h:panelGroup rendered="#{empty modelParcelle.liste}">
-        <h4>Aucune parcelle disponible.</h4>
+      <h:panelGroup rendered="#{empty modelParcelle.parcellesDuCompte}">
+        <h4>Aucune parcelle enregistrée.</h4>
       </h:panelGroup>
 
-      <h:dataTable styleClass="liste" value="#{modelParcelle.liste}" var="item"
+      <h:dataTable styleClass="liste" value="#{modelParcelle.parcellesDuCompte}" var="item"
                    rowClasses="impair, pair" columnClasses="center,left,center"
                    rendered="#{not empty modelParcelle.liste}">
         <h:column>
@@ -28,11 +28,6 @@
           #{item.surface}
         </h:column>
 
-        <h:column>
-          <f:facet name="header"><h:outputText value="Libre ?"/></f:facet>
-          <h:outputText value="#{item.libre ? 'Oui' : 'Non'}"/>
-        </h:column>
-
         <!--  <h:column>
           <f:facet name="header"><h:outputText value="Compte"/></f:facet>
           <h:outputText value="#{empty item.comptePseudo ? (empty item.idCompte ? '-' : item.idCompte) : item.comptePseudo}"/>
@@ -42,19 +37,25 @@
 					<f:facet name="header">
 						<h:outputText value="Actions" />
 					</f:facet>
-					<h:button outcome="formulaire"
+					<h:button outcome="disponibles"
 						image="#{ resource['images:modifier.png'] }" title="Modifier"
 						styleClass="image-action" />
+						
 					<h:commandButton action="#{modelParcelle.supprimer(item.id)}"
 						onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
 						image="#{ resource['images:supprimer.png'] }" title="Supprimer"
 						styleClass="image-action" />
 				</h:column>
+				 <h:column>
+        <f:facet name="header">Actions</f:facet>
+	</h:column>
       </h:dataTable>
+           
+      <h:button value="Retour" outcome="home"/>
     </h:form>
 
     <br/>
-    <h:button value="Ajouter une parcelle" outcome="formulaire"/>
+    
   </ui:define>
 </ui:composition>
 </html>

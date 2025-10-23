@@ -31,7 +31,7 @@ public class Parcelle {
 	private Compte compte;
 
 	// Relation correcte : Une parcelle peut contenir plusieurs "Contenir"
-	@OneToMany(mappedBy = "parcelle", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "culture", cascade = CascadeType.ALL)
 	private List<Contenir> contenirs = new ArrayList<>();
 
 	// -------

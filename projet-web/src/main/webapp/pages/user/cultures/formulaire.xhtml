@@ -2,51 +2,92 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <ui:composition template="/template/page-standard.xhtml">
-    <ui:define name="titre">
+	<ui:define name="titre">
         Culture
     </ui:define>
-    <ui:define name="contenu">
-        <h2>#{modelCulture.courant.id == null ? 'Nouvelle culture' : 'Modifier la culture'}</h2>
-        <h:form>
-            <table class="form">
-                <tr>
-                    <td><h:outputLabel for="id">Id :</h:outputLabel></td>
+
+	<f:metadata>
+		<f:viewParam name="id" value="#{modelCulture.courant.id}" />
+		<f:viewAction action="#{modelCulture.actualiserCourant}" />
+	</f:metadata>
+	<ui:define name="contenu">
+		<h2>#{modelCulture.courant.id == null ? 'Nouvelle culture' :
+			'Modifier la culture'}</h2>
+		<h:form>
+			<table class="form">
+				<!-- <tr>
+					<h:outputLabel for="parcelle" value="Associer à une parcelle :" />
+					<h:selectOneMenu id="parcelle"
+						value="#{modelCulture.idParcelleSelectionnee}">
+						<f:selectItem itemLabel=" Choisir une parcelle "
+							itemValue="#{null}" />
+						<f:selectItems value="#{modelParcelle.parcellesDuCompte}" var="p"
+							itemLabel="Parcelle # #{p.id} - #{p.surface} m²"
+							itemValue="#{p.id}" />
+					</h:selectOneMenu>
+				</tr> -->
+				
+				<tr>
+                    <td><h:outputLabel for="parcelle" value="Associer à une parcelle :" /></td>
                     <td>
-                        <h:inputText id="id" size="5" readonly="true"
-                                     value="#{modelCulture.courant.id}" /> 
-                        <br /> 
-                        <h:message for="id" errorClass="error" />
+                        <h:selectOneMenu id="parcelle"
+                                         value="#{modelCulture.idParcelleSelectionnee}">
+                            <f:selectItem itemLabel="-- Choisir une parcelle --" itemValue="#{null}" />
+                            <f:selectItems value="#{modelParcelle.parcellesDuCompte}"
+                                           var="p"
+                                           itemLabel="Parcelle # #{p.id} - #{p.surface} m²"
+                                           itemValue="#{p.id}" />
+                        </h:selectOneMenu>
+                        <br />
+                        <h:message for="parcelle" errorClass="error" />
                     </td>
                 </tr>
-                
-                <tr>
-                    <td><h:outputLabel for="nom">Nom de la culture :</h:outputLabel></td>
+				<tr>	
+				
+					<td><h:outputLabel for="id">Id :</h:outputLabel></td>
+					<td><h:inputText id="id" size="5" readonly="true"
+							value="#{modelCulture.courant.id}" /> <br /> <h:message
+							for="id" errorClass="error" /></td>
+				</tr>
+
+				<tr>
+					<td><h:outputLabel for="nom">Nom de la culture :</h:outputLabel></td>
+					<td><h:inputText id="nom" size="50"
+							value="#{modelCulture.courant.nom}" required="true"
+							requiredMessage="Le nom de la culture est obligatoire" /> <br />
+						<h:message for="nom" errorClass="error" /></td>
+				</tr>
+				<tr id="infosDisponibilite">
+                    <td><b>Infos sur la parcelle :</b></td>
                     <td>
-                        <h:inputText id="nom" size="50"
-                                     value="#{modelCulture.courant.nom}" 
-                                     required="true"
-                                     requiredMessage="Le nom de la culture est obligatoire" /> 
-                        <br /> 
-                        <h:message for="nom" errorClass="error" />
+                        <h:outputText value="Part restante : #{modelCulture.partRestante} %" />
+                        <br />
+                        <h:outputText value="Surface libre : #{modelCulture.surfaceDisponible} m²">
+                            <f:convertNumber type="number" maxFractionDigits="2" />
+                        </h:outputText>
                     </td>
                 </tr>
-            </table>
-            
-            <br />
-            <h:commandButton action="#{modelCulture.validerMiseAJour}"
-                             value="Valider" />
-            <h:button outcome="liste" value="Annuler" />
-        </h:form>
-    </ui:define>
-    
-    <f:metadata>
-        <f:viewParam name="id" value="#{modelCulture.courant.id}" />
-        <f:viewAction action="#{modelCulture.actualiserCourant}" />
-    </f:metadata>
+				<tr>
+				
+					<h:outputLabel for="part" value="Part (%) :" />
+					<h:inputText id="part" value="#{modelCulture.partSelectionnee}" />
+				</tr>
+
+
+			</table>
+
+			<br />
+			<h:commandButton action="#{modelCulture.validerMiseAJour}"
+				value="Valider" />
+			<h:button outcome="liste" value="Annuler" />
+		</h:form>
+	</ui:define>
+
+
 </ui:composition>
 </html>

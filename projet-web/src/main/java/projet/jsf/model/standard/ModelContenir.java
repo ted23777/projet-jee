@@ -14,6 +14,7 @@ import projet.commun.dto.DtoCulture;
 import projet.commun.dto.DtoParcelle;
 import projet.commun.exception.ExceptionValidation;
 import projet.commun.service.IServiceContenir;
+import projet.commun.service.IServiceParcelle;
 import projet.jsf.data.Contenir;
 import projet.jsf.data.Culture;
 import projet.jsf.data.Parcelle;
@@ -40,7 +41,16 @@ public class ModelContenir implements Serializable {
 
     @EJB
     private IServiceContenir serviceContenir;
+    
+    @EJB
+    private IServiceParcelle serviceParcelle;
+    
+    @Inject
+    private ModelCulture modelCulture;
 
+    @Inject
+    private ModelParcelle modelParcelle;
+    
     @Inject
     private IMapper mapper;
 
@@ -239,4 +249,29 @@ public class ModelContenir implements Serializable {
          UtilJsf.messageError(e);
      }
  }
+ 
+ public List<Integer> getParcellesDeCulture(int idCulture) {
+	    List<Integer> ids = new ArrayList<>();
+	    for (DtoContenir c : serviceContenir.listerParCulture(idCulture)) {
+	        ids.add(c.getIdParcelle());
+	    }
+	    return ids;
+	}
+
+public ModelParcelle getModelParcelle() {
+	return modelParcelle;
+}
+
+public void setModelParcelle(ModelParcelle modelParcelle) {
+	this.modelParcelle = modelParcelle;
+}
+
+public ModelCulture getModelCulture() {
+	return modelCulture;
+}
+
+public void setModelCulture(ModelCulture modelCulture) {
+	this.modelCulture = modelCulture;
+}
+
 }

@@ -30,6 +30,7 @@ public class ModelParcelle implements Serializable {
     // Champs
     //-------
     private List<Parcelle> liste;
+    
     private Parcelle courant;
 
     @EJB

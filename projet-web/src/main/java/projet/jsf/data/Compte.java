@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @SuppressWarnings("serial")
@@ -36,7 +37,7 @@ public class Compte implements Serializable  {
 	@Email( message = "Adresse e-mail invalide" )
 	private String		adresseMail;
 	
-	@NotBlank( message = "Le solde doit être renseigné")
+	@NotNull( message = "Le solde doit être renseigné")
 	@Size(max=25, message = "Valeur trop longue pour le solde : 25 car. maxi" )
 	private Double solde;
 	

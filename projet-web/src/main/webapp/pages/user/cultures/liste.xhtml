@@ -2,77 +2,64 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <ui:composition template="/template/page-standard.xhtml">
-    <ui:define name="titre">
+	<ui:define name="titre">
         Cultures
     </ui:define>
-    <ui:define name="contenu">
-        <h2>Catalogue des cultures</h2>
+	<ui:define name="contenu">
+		<h2>Mes cultures</h2>
 
-        <!-- Barre de recherche -->
-        <h:form>
-            <h:panelGrid columns="3">
-                <h:inputText value="#{modelCulture.critereRecherche}" 
-                             placeholder="Rechercher par nom..." />
-                <h:commandButton value="Rechercher" 
-                                 action="#{modelCulture.rechercher}" />
-                <h:commandButton value="Réinitialiser" 
-                                 action="#{modelCulture.reinitialiserRecherche}" />
-            </h:panelGrid>
-        </h:form>
+		<br />
 
-        <br />
+		<h:form>
+			<h:panelGroup rendered="#{empty modelCulture.liste}">
+				<h4>Aucune culture disponible.</h4>
+			</h:panelGroup>
 
-        <h:form>
-            <h:panelGroup rendered="#{empty modelCulture.liste}">
-                <h4>Aucune culture disponible.</h4>
-            </h:panelGroup>
+			<h:dataTable value="#{modelCulture.liste}" var="item"
+             rendered="#{not empty modelCulture.liste}"
+             styleClass="liste" rowClasses="impair, pair">
 
-            <h:dataTable styleClass="liste" value="#{modelCulture.liste}"
-                         var="item" rowClasses="impair, pair"
-                         columnClasses="center,left,center"
-                         rendered="#{not empty modelCulture.liste}">
+    <h:column>
+        <f:facet name="header">Nom de la culture</f:facet>
+        #{item.nom}
+    </h:column>
 
-                <h:column>
-                    <f:facet name="header">
-                        <h:outputText value="Id" />
-                    </f:facet>
-                    #{item.id}
-                </h:column>
+    <h:column>
+        <f:facet name="header">Présente dans les parcelles</f:facet>
+        <ui:repeat value="#{modelContenir.getParcellesDeCulture(item.id)}" var="idParcelle">
+            Parcelle # #{idParcelle}<br />
+        </ui:repeat>
+    </h:column>
 
-                <h:column>
-                    <f:facet name="header">
-                        <h:outputText value="Nom de la culture" />
-                    </f:facet>
-                    #{item.nom}
-                </h:column>
+    <h:column>
+        <f:facet name="header">Actions</f:facet>
 
-                <h:column>
-                    <f:facet name="header">
-                        <h:outputText value="Actions" />
-                    </f:facet>
-                    <!-- bouton modifier -->
-                    <h:button outcome="formulaire"
-                              image="#{ resource['images:modifier.png'] }" 
-                              title="Modifier"
-                              styleClass="image-action" />
+        <h:link outcome="formulaire">
+            <f:param name="id" value="#{item.id}" />
+            <h:graphicImage library="images" name="modifier.png"
+                            title="Modifier" styleClass="image-action" />
+        </h:link>
+		
+		
+        <h:commandButton action="#{modelCulture.supprimer(item)}"
+                         onclick="return confirm('Supprimer cette culture ?')"
+                         image="#{resource['images:supprimer.png']}"
+                         title="Supprimer" styleClass="image-action" />
+    </h:column>
 
-                    <!-- bouton supprimer -->
-                    <h:commandButton action="#{modelCulture.supprimer(item)}"
-                                     onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
-                                     image="#{ resource['images:supprimer.png'] }" 
-                                     title="Supprimer"
-                                     styleClass="image-action" />
-                </h:column>
-            </h:dataTable>
-        </h:form>
+</h:dataTable>
 
-        <br />
-        <h:button value="Ajouter une culture" outcome="formulaire" />
-    </ui:define>
+		</h:form>
+
+		<br />
+		<h:button value="Ajouter une culture" outcome="formulaire" />
+		<h:button value="Retour à l’accueil" outcome="home" />
+
+	</ui:define>
 </ui:composition>
 </html>

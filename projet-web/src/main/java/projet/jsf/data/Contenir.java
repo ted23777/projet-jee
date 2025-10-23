@@ -12,9 +12,9 @@ public class Contenir implements Serializable {
 
 	private int idContenir;
 	
-    private Integer parcelle;
+    private Integer idparcelle;
 
-    private Integer culture;
+    private Integer idculture;
 
     private Double part;
     
@@ -22,9 +22,9 @@ public class Contenir implements Serializable {
     	
     }
 
-    public Contenir(Integer parcelle, Integer culture, Double part) {
-		this.parcelle = parcelle;
-		this.culture = culture;
+    public Contenir(Integer idparcelle, Integer idculture, Double part) {
+		this.idparcelle = idparcelle;
+		this.idculture = idculture;
 		this.part = part;
 	}
 
@@ -33,19 +33,19 @@ public class Contenir implements Serializable {
     //-------
 
     public Integer getIdParcelle() {
-        return parcelle;
+        return idparcelle;
     }
 
-    public void setIdParcelle(Integer parcelle) {
-        this.parcelle = parcelle;
+    public void setIdParcelle(Integer idparcelle) {
+        this.idparcelle = idparcelle;
     }
 
     public Integer getIdCulture() {
-        return culture;
+        return idculture;
     }
 
-    public void setIdCulture(Integer culture) {
-        this.culture = culture;
+    public void setIdCulture(Integer idculture) {
+        this.idculture = idculture;
     }
 
     public Double getPart() {
@@ -70,7 +70,7 @@ public class Contenir implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(culture, idContenir, parcelle, part);
+		return Objects.hash(idculture, idContenir, idparcelle, part);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class Contenir implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Contenir other = (Contenir) obj;
-		return Objects.equals(culture, other.culture) && idContenir == other.idContenir
-				&& Objects.equals(parcelle, other.parcelle) && Objects.equals(part, other.part);
+		return Objects.equals(idculture, other.idculture) && idContenir == other.idContenir
+				&& Objects.equals(idparcelle, other.idparcelle) && Objects.equals(part, other.part);
 	}
 }
