@@ -41,4 +41,6 @@ public interface IDaoParcelle {
 	    
 	    void changerStatut(int idParcelle, boolean libre);
 
+	    List<Parcelle> listerParIdCompte(int idCompte);
+
 }
