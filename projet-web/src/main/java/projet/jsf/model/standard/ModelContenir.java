@@ -157,7 +157,7 @@ public class ModelContenir implements Serializable {
 
     //ERREUR AU NIVEAU DE L'INTERFACE DE IServiceContenir
     public Double getPartRestante(int idParcelle) {
-        return IServiceContenir.getPartRestante(idParcelle);
+        return serviceContenir.getPartRestante(idParcelle);
     }
 
     public void ajouterCulture(int idParcelle, int idCulture, double part) {

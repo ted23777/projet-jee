@@ -13,6 +13,7 @@ import projet.commun.dto.DtoCompte;
 import projet.commun.dto.DtoParcelle;
 import projet.commun.exception.ExceptionValidation;
 import projet.commun.service.IServiceCompte;
+import projet.commun.service.IServiceConnexion;
 import projet.commun.service.IServiceContenir;
 import projet.commun.service.IServiceParcelle;
 import projet.jsf.data.Contenir;
@@ -36,9 +37,15 @@ public class ModelParcelle implements Serializable {
     
     @EJB
     private IServiceCompte serviceCompte;  // Ajouter cette injection
+    
+    @EJB
+    private IServiceContenir serviceContenir;   
 
     @Inject
     private IMapper mapper;
+    
+    @Inject
+    private ModelCompte modelCompte;
 
     //-------
     // Getters
@@ -162,13 +169,31 @@ public class ModelParcelle implements Serializable {
   * Récupère le nom d'une parcelle
   */
  public String getNomParcelle(Integer idParcelle) {
-     if (idParcelle == null) return "";
-     Parcelle p = liste.stream()
-         .filter(parcelle -> parcelle.getId().equals(idParcelle))
-         .findFirst()
-         .orElse(null);
-     return p != null ? "Parcelle #" + p.getId() + " (" + p.getSurface() + " m²)" : "Parcelle #" + idParcelle;
- }
+	    // 1. Vérification de l'argument (conservée car bonne pratique)
+	    if (idParcelle == null) {
+	        return "";
+	    }
+
+	    // 2. Recherche classique avec une boucle for
+	    Parcelle parcelleTrouvee = null;
+	    for (Parcelle p : liste) {
+	        // La méthode equals est utilisée pour comparer deux Integer
+	        if (p.getId().equals(idParcelle)) {
+	            parcelleTrouvee = p;
+	            break; // Sortir de la boucle dès que l'élément est trouvé
+	        }
+	    }
+
+	    // 3. Construction de la chaîne de caractères
+	    if (parcelleTrouvee != null) {
+	        // Cas où la parcelle a été trouvée
+	        return "Parcelle #" + parcelleTrouvee.getId() + 
+	               " (" + parcelleTrouvee.getSurface() + " m²)";
+	    } else {
+	        // Cas où la parcelle n'a pas été trouvée (le "orElse" original)
+	        return "Parcelle #" + idParcelle;
+	    }
+	}
 
  /**
   * Récupère le nom d'une culture
@@ -225,11 +250,52 @@ public class ModelParcelle implements Serializable {
      if (parcelle == null) return 0.0;
      Double partRestante = null;
 	try {
-		partRestante = IServiceContenir.getPartRestante(parcelle.getId());
+		partRestante = serviceContenir.getPartRestante(parcelle.getId());
 	} catch (Exception e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
      return (parcelle.getSurface() * partRestante) / 100.0;
+ }
+ /**
+  * Récupère les parcelles du compte connecté
+  */
+ public List<Parcelle> getParcellesDuCompte() {
+     if (modelCompte == null || modelCompte.getCourant() == null || modelCompte.getCourant().getId() == null) {
+         return new ArrayList<>();
+     }
+     
+     List<Parcelle> mesParcelles = new ArrayList<>();
+     try {
+         List<DtoParcelle> dtos = serviceParcelle.listerParCompte(modelCompte.getCourant().getId());
+         for (DtoParcelle dto : dtos) {
+             mesParcelles.add(mapper.map(dto));
+         }
+     } catch (Exception e) {
+         UtilJsf.messageError("Erreur : " + e.getMessage());
+     }
+     return mesParcelles;
+ }
+
+ /**
+  * Réserve une parcelle pour l'utilisateur connecté
+  */
+ public String reserverParcelle(Parcelle parcelle) {
+     if (modelCompte == null || modelCompte.getCourant() == null) {
+         UtilJsf.messageError("Vous devez être connecté pour réserver une parcelle.");
+         return null;
+     }
+     
+     try {
+         parcelle.setIdCompte(modelCompte.getCourant().getId());
+         parcelle.setLibre(false);
+         serviceParcelle.modifier(mapper.map(parcelle));
+         UtilJsf.messageInfo("Parcelle réservée avec succès !");
+         liste = null; // Force le rechargement
+         return "liste";
+     } catch (ExceptionValidation e) {
+         UtilJsf.messageError(e);
+         return null;
+     }
  }
 }

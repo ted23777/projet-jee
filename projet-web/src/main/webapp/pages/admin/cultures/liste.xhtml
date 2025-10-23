@@ -13,20 +13,6 @@
     <ui:define name="contenu">
         <h2>Catalogue des cultures</h2>
 
-        <!-- Barre de recherche -->
-        <h:form>
-            <h:panelGrid columns="3">
-                <h:inputText value="#{modelCulture.critereRecherche}" 
-                             placeholder="Rechercher par nom..." />
-                <h:commandButton value="Rechercher" 
-                                 action="#{modelCulture.rechercher}" />
-                <h:commandButton value="Réinitialiser" 
-                                 action="#{modelCulture.reinitialiserRecherche}" />
-            </h:panelGrid>
-        </h:form>
-
-        <br />
-
         <h:form>
             <h:panelGroup rendered="#{empty modelCulture.liste}">
                 <h4>Aucune culture disponible.</h4>
