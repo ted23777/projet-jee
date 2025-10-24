@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/template/page-standard.xhtml">
+	<ui:define name="titre">
+        Gestion des cultures
+    </ui:define>
+
+	<f:metadata>
+		<f:viewParam name="idParcelle"
+			value="#{modelContenir.idParcelleSelectionnee}" />
+		<f:viewAction action="#{modelContenir.chargerParParcelle}" />
+	</f:metadata>
+
+	<ui:define name="contenu">
+		<h2>Gestion des cultures - Parcelle
+			##{modelContenir.idParcelleSelectionnee}</h2>
+
+		<h:form id="formGestionCultures">
+
+			<h:panelGrid columns="2" columnClasses="info-label, info-value"
+				style="margin-bottom: 20px;">
+				<h:outputText value="Surface totale :" style="font-weight: bold;" />
+				<h:panelGroup>
+					<ui:repeat value="#{modelParcelle.parcellesDuCompte}" var="p">
+						<h:outputText value="#{p.surface}"
+							rendered="#{p.id == modelContenir.idParcelleSelectionnee}">
+							<f:convertNumber pattern="#,##0.00" />
+						</h:outputText>
+					</ui:repeat>
+                    m²
+                </h:panelGroup>
+
+				<h:outputText value="Part utilisée :" style="font-weight: bold;" />
+				<h:panelGroup>
+					<h:outputText
+						value="#{modelContenir.getSommePartsParcelle(modelContenir.idParcelleSelectionnee)}">
+						<f:convertNumber pattern="#,##0.00" />
+					</h:outputText>
+                    %
+                </h:panelGroup>
+
+				<h:outputText value="Part disponible :" style="font-weight: bold;" />
+				<h:panelGroup>
+					<h:outputText
+						value="#{modelContenir.getPartRestante(modelContenir.idParcelleSelectionnee)}">
+						<f:convertNumber pattern="#,##0.00" />
+					</h:outputText>
+                    %
+                </h:panelGroup>
+			</h:panelGrid>
+
+			<h3>🌱 Cultures plantées</h3>
+
+			<h:panelGroup
+				rendered="#{empty modelContenir.listerParParcelle(modelContenir.idParcelleSelectionnee)}">
+				<p>Aucune culture plantée sur cette parcelle.</p>
+			</h:panelGroup>
+
+			<h:dataTable
+				value="#{modelContenir.listerParParcelle(modelContenir.idParcelleSelectionnee)}"
+				var="item" styleClass="liste" rowClasses="impair, pair"
+				rendered="#{not empty modelContenir.listerParParcelle(modelContenir.idParcelleSelectionnee)}">
+
+				<h:column>
+					<f:facet name="header">CULTURE</f:facet>
+					<h:outputText
+						value="#{modelContenir.getNomCulture(item.idCulture)}" />
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">PART (%)</f:facet>
+					<h:outputText value="#{item.part}">
+						<f:convertNumber pattern="#,##0.00" />
+					</h:outputText>
+				</h:column>
+
+
+				<h:column>
+					<f:facet name="header">Actions</f:facet>
+						
+						  <!-- bouton supprimer -->
+                    <h:commandButton action="#{modelContenir.retirerCulture(modelContenir.idParcelleSelectionnee, item.idCulture)}"
+                                     onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
+                                     image="#{ resource['images:supprimer.png'] }" 
+                                     title="Supprimer"
+                                     styleClass="image-action" />
+				</h:column>
+				
+			</h:dataTable>
+
+			<br />
+
+			<h:panelGroup
+				rendered="#{modelContenir.getPartRestante(modelContenir.idParcelleSelectionnee) > 0}">
+				<h3>➕ Ajouter une culture</h3>
+
+				<h:panelGrid columns="2" columnClasses="info-label, info-value">
+
+					<h:outputLabel for="culture" value="Culture :" />
+					<h:panelGroup>
+						<h:selectOneMenu id="culture"
+							value="#{modelContenir.idCultureAAjouter}" style="width: 200px;">
+							<f:selectItem itemLabel="-- Sélectionner --" itemValue="#{null}" />
+							<f:selectItems value="#{modelCulture.liste}" var="c"
+								itemLabel="#{c.nom}" itemValue="#{c.id}" />
+						</h:selectOneMenu>
+						<br />
+						<h:message for="culture" errorClass="error" />
+					</h:panelGroup>
+
+					<h:outputLabel for="part" value="Part (%) :" />
+					<h:panelGroup>
+						<h:inputText id="part" value="#{modelContenir.partAAjouter}"
+							size="10" style="width: 100px;" />
+						<br />
+						<h:message for="part" errorClass="error" />
+						<br />
+						<small style="color: #666;"> 💡 Maximum disponible : <strong>
+								<h:outputText
+									value="#{modelContenir.getPartRestante(modelContenir.idParcelleSelectionnee)}">
+									<f:convertNumber pattern="#,##0.00" />
+								</h:outputText>
+						</strong> %
+						</small>
+					</h:panelGroup>
+
+				</h:panelGrid>
+
+				<br />
+				<h:commandButton value="➕ Ajouter"
+					action="#{modelContenir.ajouterCulturePourParcelle}" update="@form"
+					styleClass="btn-success" />
+			</h:panelGroup>
+
+			<br />
+			<hr />
+			<h:button value="⬅️ Retour à mes parcelles" outcome="liste"
+				styleClass="btn-secondary" />
+
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

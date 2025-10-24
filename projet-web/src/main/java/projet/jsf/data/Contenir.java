@@ -3,6 +3,8 @@ package projet.jsf.data;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+
 @SuppressWarnings("serial")
 public class Contenir implements Serializable {
 
@@ -10,12 +12,16 @@ public class Contenir implements Serializable {
     // Champs
     //-------
 
-	private int idContenir;
+	private Integer idContenir;
 	
-    private Integer idparcelle;
-
-    private Integer idculture;
-
+   
+    @NotNull(message = "La parcelle doit être renseignée")
+    private Integer idParcelle;  // ✅ CORRIGÉ
+    
+    @NotNull(message = "La culture doit être renseignée")
+    private Integer idCulture;   // ✅ CORRIGÉ
+    
+    @NotNull(message = "La part doit être renseignée")
     private Double part;
     
     public Contenir() {
@@ -23,8 +29,8 @@ public class Contenir implements Serializable {
     }
 
     public Contenir(Integer idparcelle, Integer idculture, Double part) {
-		this.idparcelle = idparcelle;
-		this.idculture = idculture;
+		this.idParcelle = idparcelle;
+		this.idCulture = idculture;
 		this.part = part;
 	}
 
@@ -33,19 +39,19 @@ public class Contenir implements Serializable {
     //-------
 
     public Integer getIdParcelle() {
-        return idparcelle;
+        return idParcelle;
     }
 
     public void setIdParcelle(Integer idparcelle) {
-        this.idparcelle = idparcelle;
+        this.idParcelle = idparcelle;
     }
 
     public Integer getIdCulture() {
-        return idculture;
+        return idCulture;
     }
 
     public void setIdCulture(Integer idculture) {
-        this.idculture = idculture;
+        this.idCulture = idculture;
     }
 
     public Double getPart() {
@@ -70,7 +76,7 @@ public class Contenir implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(idculture, idContenir, idparcelle, part);
+		return Objects.hash(idCulture, idContenir, idParcelle, part);
 	}
 
 	@Override
@@ -82,7 +88,7 @@ public class Contenir implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Contenir other = (Contenir) obj;
-		return Objects.equals(idculture, other.idculture) && idContenir == other.idContenir
-				&& Objects.equals(idparcelle, other.idparcelle) && Objects.equals(part, other.part);
+		return Objects.equals(idCulture, other.idCulture) && idContenir == other.idContenir
+				&& Objects.equals(idParcelle, other.idParcelle) && Objects.equals(part, other.part);
 	}
 }

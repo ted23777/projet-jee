@@ -118,5 +118,7 @@ public interface IMapperEjb {
     @Mapping(target = "parcelle", source = "idParcelle")
     @Mapping(target = "culture", source = "idCulture")
     Contenir map(DtoContenir source);
+    
+    
    
 }

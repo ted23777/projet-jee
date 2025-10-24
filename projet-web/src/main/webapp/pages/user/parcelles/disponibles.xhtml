@@ -1,62 +1,132 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<ui:composition template="/template/page-standard.xhtml"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://xmlns.jcp.org/jsf/html"
-    xmlns:f="http://xmlns.jcp.org/jsf/core"
-    xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-  <f:metadata>
-    <f:viewParam name="id" value="#{modelParcelle.courant.id}" />
-    <f:viewAction action="#{modelParcelle.actualiserCourant()}" />
-  </f:metadata>
+<ui:composition template="/template/page-standard.xhtml">
 
-  <ui:define name="titre">Parcelle</ui:define>
+  <ui:define name="titre">Parcelles disponibles</ui:define>
 
   <ui:define name="contenu">
-    <h:form>
-      <table class="form">
-        <tr>
-          <td><h:outputLabel for="id">Id :</h:outputLabel></td>
-          <td>
-            <h:inputText id="id" size="5" readonly="true" value="#{modelParcelle.courant.id}" />
-            <br/><h:message for="id" errorClass="error"/>
-          </td>
-        </tr>
+    <h2>Liste des parcelles disponibles</h2>
 
-        <tr>
-          <td><h:outputLabel for="surface">Surface (m²) :</h:outputLabel></td>
-          <td>
-            <h:inputText id="surface" size="10" value="#{modelParcelle.courant.surface}">
-              <f:convertNumber type="number" maxFractionDigits="2"/>
-            </h:inputText>
-            <br/><h:message for="surface" errorClass="error"/>
-          </td>
-        </tr>
+    <h:form id="formDisponibles">
 
-        <tr>
-          <td><h:outputLabel for="libre">Libre :</h:outputLabel></td>
-          <td>
-            <h:selectBooleanCheckbox id="libre" value="#{modelParcelle.courant.libre}"/>
-            <br/><h:message for="libre" errorClass="error"/>
-          </td>
-        </tr>
+      <!-- Messages -->
+      <h:messages globalOnly="true" styleClass="messages" />
 
-        <tr>
-          <td><h:outputLabel for="compte">Compte (optionnel) :</h:outputLabel></td>
-          <td>
-            <h:selectOneMenu id="compte" value="#{modelParcelle.courant.idCompte}">
-              <f:selectItem itemValue="#{null}" itemLabel="-- Sans compte --"/>
-              <!--<f:selectItems value="#{modelParcelle.comptes}" var="c"
-                             itemValue="#{c.id}" itemLabel="#{c.pseudo} (id: #{c.id})"/> -->
-            </h:selectOneMenu>
-            <br/><h:message for="compte" errorClass="error"/>
-          </td>
-        </tr>
-      </table>
+      <!-- Si aucune parcelle disponible -->
+      <h:panelGroup rendered="#{empty modelParcelle.parcellesLibres}">
+        <div style="background: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; border-radius: 4px; margin: 20px 0;">
+          <h4 style="margin-top: 0;">ℹ️ Aucune parcelle disponible</h4>
+          <p>Il n'y a actuellement aucune parcelle disponible à la réservation.</p>
+        </div>
+      </h:panelGroup>
 
-      <br/>
-      <h:commandButton value="Valider" action="#{modelParcelle.validerMiseAJour()}"/>
-      <h:button value="Retour" outcome="parcelles"/>
+      <!-- Tableau des parcelles disponibles -->
+      <h:dataTable value="#{modelParcelle.parcellesLibres}" 
+                   var="parcelle"
+                   styleClass="liste"
+                   rowClasses="impair, pair"
+                   rendered="#{not empty modelParcelle.parcellesLibres}">
+
+        <!-- Identifiant -->
+        <h:column>
+          <f:facet name="header">ID PARCELLE</f:facet>
+          <h:outputText value="#{parcelle.id}" />
+        </h:column>
+
+        <!-- Surface -->
+        <h:column>
+          <f:facet name="header">SURFACE (m²)</f:facet>
+          <h:outputText value="#{parcelle.surface}">
+            <f:convertNumber pattern="#,##0.00" />
+          </h:outputText>
+        </h:column>
+
+        <!-- Actions -->
+        <h:column>
+          <f:facet name="header">ACTIONS</f:facet>
+
+          <!-- ✅ Bouton réserver CORRIGÉ -->
+          <h:commandButton value="✅ Réserver" 
+                           action="#{modelParcelle.reserverParcelle(parcelle)}"
+                           onclick="return confirm('Êtes-vous sûr de vouloir réserver cette parcelle ?')"
+                           update="formDisponibles"
+                           styleClass="btn-success"/>
+        </h:column>
+
+      </h:dataTable>
+
+      <br />
+      <h:button value="⬅️ Retour à mes parcelles" outcome="liste" styleClass="btn-secondary" />
+
     </h:form>
+
   </ui:define>
 </ui:composition>
+
+</html>
+
+<!-- <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<ui:composition template="/template/page-standard.xhtml">
+
+  <ui:define name="titre">Parcelles disponibles</ui:define>
+
+  <ui:define name="contenu">
+    <h2>Liste des parcelles disponibles</h2>
+
+    <h:form>
+
+      Si aucune parcelle disponible
+      <h:panelGroup rendered="#{empty modelParcelle.parcellesLibres}">
+        <h4>Aucune parcelle disponible pour le moment.</h4>
+      </h:panelGroup>
+
+      Tableau des parcelles disponibles
+      <h:dataTable value="#{modelParcelle.parcellesLibres}" 
+                   var="parcelle"
+                   styleClass="liste"
+                   rowClasses="impair, pair"
+                   rendered="#{not empty modelParcelle.parcellesLibres}">
+
+        Identifiant
+        <h:column>
+          <f:facet name="header"><h:outputText value="ID Parcelle" /></f:facet>
+          <h:outputText value="#{parcelle.id}" />
+        </h:column>
+
+        Surface
+        <h:column>
+          <f:facet name="header"><h:outputText value="Surface (m²)" /></f:facet>
+          <h:outputText value="#{parcelle.surface}" />
+        </h:column>
+
+        Actions
+        <h:column>
+          <f:facet name="header"><h:outputText value="Actions" /></f:facet>
+
+          Bouton réserver
+          <h:commandButton value="Réserver" 
+                           action="#{modelParcelle.reserverParcelle(parcelle)}"
+                           onclick="return confirm('Êtes-vous sûr de vouloir réserver cette parcelle ?')"/>
+        </h:column>
+
+      </h:dataTable>
+
+      <br />
+      <h:button value="Retour à mes parcelles" outcome="parcelles" />
+
+    </h:form>
+
+  </ui:define>
+</ui:composition>
+
+</html>
+ -->

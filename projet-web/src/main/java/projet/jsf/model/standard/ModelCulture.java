@@ -17,6 +17,7 @@ import projet.commun.service.IServiceCulture;
 import projet.commun.service.IServiceParcelle;
 import projet.jsf.data.Culture;
 import projet.jsf.data.mapper.IMapper;
+import projet.jsf.util.CompteActif;
 import projet.jsf.util.UtilJsf;
 
 @SuppressWarnings("serial")
@@ -52,7 +53,7 @@ public class ModelCulture implements Serializable {
 	public List<Culture> getListe() {
 		if (liste == null) {
 			liste = new ArrayList<>();
-			for (DtoCulture dto : serviceCulture.listerTout()) {
+			for (DtoCulture dto : getServiceCulture().listerTout()) {
 				liste.add(mapper.map(dto));
 			}
 		}
@@ -78,7 +79,7 @@ public class ModelCulture implements Serializable {
 	// -------
 	public String actualiserCourant() {
 		if (courant != null && courant.getId() != null) {
-			DtoCulture dto = serviceCulture.retrouver(courant.getId());
+			DtoCulture dto = getServiceCulture().retrouver(courant.getId());
 			if (dto == null) {
 				UtilJsf.messageError("La culture demandée n'existe pas.");
 				return "liste";
@@ -94,37 +95,48 @@ public class ModelCulture implements Serializable {
 	// -------
 	
 	public String validerMiseAJour() {
-		DtoCulture dtoCulture = mapper.map(courant);
-		try {
-			if (courant.getId() == null) {
-				//serviceCulture.inserer(mapper.map(courant));
-				int id = serviceCulture.inserer(dtoCulture);   // returns the generated id
-			    dtoCulture.setId(id);                          // keep working with the same DTO
-			    courant.setId(id);  
-			} else {
-				serviceCulture.modifier(mapper.map(courant));
-			}
-			if (idParcelleSelectionnee != null) {
-			    DtoContenir dtoContenir = new DtoContenir();
-			    dtoContenir.setIdParcelle(idParcelleSelectionnee);
-			    dtoContenir.setIdCulture(dtoCulture.getId());  // <-- l’id est fiable maintenant
-			    dtoContenir.setPart(100.0);                    // ou une valeur venant du formulaire
-			    serviceContenir.inserer(dtoContenir);
-			}
+	   
+	    try {
+	    	 DtoCulture dtoCulture = mapper.map(courant);
+	        if (courant.getId() == null) {
+	            // Insertion de la nouvelle culture
+	            int id = getServiceCulture().inserer(dtoCulture);   // Retourne l'ID généré
+	            dtoCulture.setId(id);                          // Met à jour l'ID dans le DTO
+	            courant.setId(id);  
+	        } else {
+	            // Mise à jour de la culture existante
+	            getServiceCulture().modifier(dtoCulture);
+	        }
 
-			UtilJsf.messageInfo("Culture enregistrée avec succès.");
-			liste = null;
-			return "liste";
-		} catch (ExceptionValidation e) {
-			UtilJsf.messageError(e);
-			return null;
-		}
+	        // Si une parcelle est sélectionnée
+	        if (idParcelleSelectionnee != null && partSelectionnee != null) {
+	            // Créer un objet DtoContenir pour associer la culture à la parcelle
+	            DtoContenir dtoContenir = new DtoContenir();
+	            dtoContenir.setIdParcelle(idParcelleSelectionnee);
+	            dtoContenir.setIdCulture(dtoCulture.getId());  // L'ID est maintenant valide
+	            dtoContenir.setPart(partSelectionnee); // Utilisation de la part entrée par l'utilisateur
+	            
+	            // Ajouter la culture à la parcelle
+	            serviceContenir.ajouterCultureAParcelle(dtoContenir);
+	        }
+
+	        UtilJsf.messageInfo("Culture enregistrée avec succès.");
+	        liste = null;  // Réinitialiser la liste pour forcer le rechargement
+	        return "liste";  // Retour à la liste des cultures
+
+	    } catch (ExceptionValidation e) {
+	        UtilJsf.messageError(e);  // Afficher l'erreur de validation
+	        return null;
+	    } catch (Exception e) {
+	        UtilJsf.messageError("Erreur lors de l'enregistrement de la culture : " + e.getMessage());
+	        return null;
+	    }
 	}
 
 	
 	public String supprimer(Culture item) {
 		try {
-			serviceCulture.supprimer(item.getId());
+			getServiceCulture().supprimer(item.getId());
 			getListe().remove(item);
 			UtilJsf.messageInfo("Culture supprimée avec succès.");
 		} catch (ExceptionValidation e) {
@@ -135,7 +147,7 @@ public class ModelCulture implements Serializable {
 
 	public List<Culture> rechercher(String nom) {
 		List<Culture> resultats = new ArrayList<>();
-		for (DtoCulture dto : serviceCulture.rechercherParNom(nom)) {
+		for (DtoCulture dto : getServiceCulture().rechercherParNom(nom)) {
 			resultats.add(mapper.map(dto));
 		}
 		return resultats;
@@ -168,6 +180,14 @@ public class ModelCulture implements Serializable {
 
 	public void setPartSelectionnee(Double partSelectionne) {
 		this.partSelectionnee = partSelectionne;
+	}
+
+	public IServiceCulture getServiceCulture() {
+		return serviceCulture;
+	}
+
+	public void setServiceCulture(IServiceCulture serviceCulture) {
+		this.serviceCulture = serviceCulture;
 	}
 
 }

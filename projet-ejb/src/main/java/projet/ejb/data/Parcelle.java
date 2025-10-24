@@ -9,6 +9,29 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "parcelle")
+@NamedQueries({
+    @NamedQuery(
+        name = "Parcelle.findAll",
+        query = "SELECT p FROM Parcelle p ORDER BY p.id"
+    ),
+    @NamedQuery(
+        name = "Parcelle.findByCompte",
+        query = "SELECT p FROM Parcelle p WHERE p.compte.id = :idCompte ORDER BY p.id"
+    ),
+    @NamedQuery(
+        name = "Parcelle.count",
+        query = "SELECT COUNT(p) FROM Parcelle p"
+    ),
+    @NamedQuery(
+        name = "Parcelle.findLibre",
+        query = "SELECT p FROM Parcelle p WHERE p.libre = true ORDER BY p.id"
+    ),
+    @NamedQuery(
+        name = "Parcelle.findOccupee",
+        query = "SELECT p FROM Parcelle p WHERE p.libre = false ORDER BY p.id"
+    )
+})
+
 public class Parcelle {
 
 	// -------
@@ -31,7 +54,7 @@ public class Parcelle {
 	private Compte compte;
 
 	// Relation correcte : Une parcelle peut contenir plusieurs "Contenir"
-	@OneToMany(mappedBy = "culture", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "parcelle", cascade = CascadeType.ALL)
 	private List<Contenir> contenirs = new ArrayList<>();
 
 	// -------

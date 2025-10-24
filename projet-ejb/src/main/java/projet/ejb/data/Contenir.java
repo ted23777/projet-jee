@@ -9,6 +9,22 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "contenir")
+@NamedQueries({
+    // Récupérer toutes les associations contenir
+    @NamedQuery(name = "Contenir.findAll", query = "SELECT c FROM Contenir c"),
+
+    // Récupérer les associations pour une parcelle donnée
+    @NamedQuery(name = "Contenir.findByParcelle", query = "SELECT c FROM Contenir c WHERE c.parcelle.id = :idParcelle"),
+
+    // Récupérer les associations pour une culture donnée
+    @NamedQuery(name = "Contenir.findByCulture", query = "SELECT c FROM Contenir c WHERE c.culture.id = :idCulture"),
+
+    // Vérifier si une culture est déjà associée à une parcelle
+    @NamedQuery(name = "Contenir.exists", query = "SELECT COUNT(c) FROM Contenir c WHERE c.parcelle.id = :idParcelle AND c.culture.id = :idCulture"),
+
+    // Récupérer la part totale occupée dans une parcelle
+    @NamedQuery(name = "Contenir.sumPartByParcelle", query = "SELECT SUM(c.part) FROM Contenir c WHERE c.parcelle.id = :idParcelle")
+})
 public class Contenir implements Serializable {
 	
 	//@EmbeddedId

@@ -19,9 +19,18 @@ public interface IServiceContenir {
     
     List<DtoContenir> listerTout();
     
+    //requetes
+    
     List<DtoContenir> listerParParcelle(int idParcelle);
     
     List<DtoContenir> listerParCulture(int idCulture);
+    
+ // Lister les cultures présentes sur une parcelle
+    List<DtoCulture> listerCulturesDeParcelle(int idParcelle);
+
+    // Lister les parcelles contenant une culture donnée
+    List<DtoParcelle> listerParcellesAvecCulture(int idCulture);
+
     
     long compter();
 
@@ -33,7 +42,7 @@ public interface IServiceContenir {
     // --- Cas d'utilisation métier ---
 
     // Ajouter une culture à une parcelle donnée
-    void ajouterCultureAParcelle(int idParcelle, int idCulture, double part) throws ExceptionValidation;
+    void ajouterCultureAParcelle(DtoContenir dtoContenir) throws ExceptionValidation;
 
     // Supprimer une culture d’une parcelle
     void retirerCultureDeParcelle(int idParcelle, int idCulture);
@@ -41,10 +50,6 @@ public interface IServiceContenir {
     // Modifier la part occupée par une culture
     void modifierPartCulture(int idParcelle, int idCulture, double nouvellePart);
 
-    // Lister les cultures présentes sur une parcelle
-    List<DtoCulture> listerCulturesDeParcelle(int idParcelle);
-
-    // Lister les parcelles contenant une culture donnée
-    List<DtoParcelle> listerParcellesAvecCulture(int idCulture);
+	void ajouterCultureAParcelle(Integer idParcelleSelectionnee, Integer idCultureAAjouter, Double partAAjouter) throws ExceptionValidation;
     
 }

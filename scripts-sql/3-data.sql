@@ -18,9 +18,9 @@ VALUES
 -- Insertion dans la table parcelle
 INSERT INTO parcelle(surface, libre, idCompte)
 VALUES
-(150.5, true, 1),
+(150.5, false, 1),
 (120.0, false, 2),
-(200.0, true, 3),
+(200.0, false, 3),
 (180.75, false, 4);
 
 -- Insertion dans la table mouvement

@@ -20,39 +20,43 @@
 				<h4>Aucune culture disponible.</h4>
 			</h:panelGroup>
 
-			<h:dataTable value="#{modelCulture.liste}" var="item"
-             rendered="#{not empty modelCulture.liste}"
-             styleClass="liste" rowClasses="impair, pair">
+			  <h:dataTable styleClass="liste" value="#{modelCulture.liste}"
+                         var="item" rowClasses="impair, pair"
+                         columnClasses="center,left,center"
+                         rendered="#{not empty modelCulture.liste}">
 
-    <h:column>
-        <f:facet name="header">Nom de la culture</f:facet>
-        #{item.nom}
-    </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Id" />
+                    </f:facet>
+                    #{item.id}
+                </h:column>
 
-    <h:column>
-        <f:facet name="header">Présente dans les parcelles</f:facet>
-        <ui:repeat value="#{modelContenir.getParcellesDeCulture(item.id)}" var="idParcelle">
-            Parcelle # #{idParcelle}<br />
-        </ui:repeat>
-    </h:column>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Nom de la culture" />
+                    </f:facet>
+                    #{item.nom}
+                </h:column>
 
-    <h:column>
-        <f:facet name="header">Actions</f:facet>
+                <h:column>
+                    <f:facet name="header">
+                        <h:outputText value="Actions" />
+                    </f:facet>
+                    <!-- bouton modifier -->
+                    <h:button outcome="formulaire?id=#{item.id}"
+                              image="#{ resource['images:modifier.png'] }" 
+                              title="Modifier"
+                              styleClass="image-action" />
 
-        <h:link outcome="formulaire">
-            <f:param name="id" value="#{item.id}" />
-            <h:graphicImage library="images" name="modifier.png"
-                            title="Modifier" styleClass="image-action" />
-        </h:link>
-		
-		
-        <h:commandButton action="#{modelCulture.supprimer(item)}"
-                         onclick="return confirm('Supprimer cette culture ?')"
-                         image="#{resource['images:supprimer.png']}"
-                         title="Supprimer" styleClass="image-action" />
-    </h:column>
-
-</h:dataTable>
+                    <!-- bouton supprimer -->
+                    <h:commandButton action="#{modelCulture.supprimer(item)}"
+                                     onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
+                                     image="#{ resource['images:supprimer.png'] }" 
+                                     title="Supprimer"
+                                     styleClass="image-action" />
+                </h:column>
+            </h:dataTable>
 
 		</h:form>
 

@@ -1,61 +1,150 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+    xmlns:h="http://xmlns.jcp.org/jsf/html"
+    xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <ui:composition template="/template/page-standard.xhtml">
-  <ui:define name="titre">Parcelles</ui:define>
 
-  <ui:define name="contenu">
-    <h2>Catalogue des parcelles</h2>
+    <ui:define name="titre">Mes parcelles</ui:define>
 
-    <h:form>
-      <h:panelGroup rendered="#{empty modelParcelle.parcellesDuCompte}">
-        <h4>Aucune parcelle enregistrée.</h4>
-      </h:panelGroup>
+    <ui:define name="contenu">
 
-      <h:dataTable styleClass="liste" value="#{modelParcelle.parcellesDuCompte}" var="item"
-                   rowClasses="impair, pair" columnClasses="center,left,center"
-                   rendered="#{not empty modelParcelle.liste}">
-        <h:column>
-          <f:facet name="header"><h:outputText value="Id"/></f:facet>
-          #{item.id}
-        </h:column>
+        <style type="text/css">
+            /* Style général simple */
+            .contenu-principal {
+                font-family: Arial, sans-serif;
+                color: #333;
+            }
+            .contenu-principal h2 {
+                font-weight: 600;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+            }
+            .contenu-principal h4 {
+                font-weight: normal;
+                color: #777;
+            }
 
-        <h:column>
-          <f:facet name="header"><h:outputText value="Surface (m²)"/></f:facet>
-          #{item.surface}
-        </h:column>
+            /* Style du tableau (classe .liste) */
+            .liste {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 20px;
+                border: 1px solid #ccc;
+            }
+            .liste th, .liste td {
+                border: 1px solid #ccc;
+                padding: 10px;
+                text-align: left;
+                vertical-align: top;
+            }
+            .liste th {
+                background-color: #e0efff; /* Bleu clair comme l'image */
+                font-weight: bold;
+            }
+            
+            /* Style pour "Aucune culture" */
+            .italic-grey {
+                color: gray;
+                font-style: italic;
+            }
 
-        <!--  <h:column>
-          <f:facet name="header"><h:outputText value="Compte"/></f:facet>
-          <h:outputText value="#{empty item.comptePseudo ? (empty item.idCompte ? '-' : item.idCompte) : item.comptePseudo}"/>
-        </h:column> -->
+            /* Style des boutons (verts comme l'image) */
+            .btn {
+                display: inline-block;
+                background-color: #28a745;
+                color: white;
+                padding: 8px 14px;
+                text-decoration: none;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                margin-right: 5px;
+                margin-bottom: 5px;
+                font-size: 14px;
+            }
+            .btn:hover {
+                background-color: #218838;
+            }
+        </style>
 
-        <h:column>
-					<f:facet name="header">
-						<h:outputText value="Actions" />
-					</f:facet>
-					<h:button outcome="disponibles"
-						image="#{ resource['images:modifier.png'] }" title="Modifier"
-						styleClass="image-action" />
-						
-					<h:commandButton action="#{modelParcelle.supprimer(item.id)}"
-						onclick="return confirm('Confirmez-vous la suppression de cette culture ?')"
-						image="#{ resource['images:supprimer.png'] }" title="Supprimer"
-						styleClass="image-action" />
-				</h:column>
-				 <h:column>
-        <f:facet name="header">Actions</f:facet>
-	</h:column>
-      </h:dataTable>
-           
-      <h:button value="Retour" outcome="home"/>
-    </h:form>
+        <div class="contenu-principal">
+            <h2>Liste de mes parcelles</h2>
 
-    <br/>
-    
-  </ui:define>
+            <h:form>
+
+                <h:panelGroup rendered="#{empty modelParcelle.parcellesDuCompte}">
+                    <h4>Aucune parcelle rattachée à votre compte.</h4>
+                </h:panelGroup>
+
+                <h:dataTable value="#{modelParcelle.parcellesDuCompte}"
+                    var="parcelle" styleClass="liste"
+                    rendered="#{not empty modelParcelle.parcellesDuCompte}">
+
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="ID Parcelle" />
+                        </f:facet>
+                        <h:outputText value="#{parcelle.id}" />
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="Surface (m²)" />
+                        </f:facet>
+                        <h:outputText value="#{parcelle.surface}">
+                            <f:convertNumber pattern="#,##0.00" />
+                        </h:outputText>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="Cultures présentes" />
+                        </f:facet>
+
+                        <h:panelGroup
+                            rendered="#{not empty modelContenir.getCulturesDeParcelle(parcelle.id)}">
+                            <ui:repeat
+                                value="#{modelContenir.getCulturesDeParcelle(parcelle.id)}"
+                                var="culture">
+                                <h:outputText value="#{culture.nom}" />
+                                <br />
+                            </ui:repeat>
+                        </h:panelGroup>
+
+                        <h:panelGroup
+                            rendered="#{empty modelContenir.getCulturesDeParcelle(parcelle.id)}">
+                            <h:outputText value="Aucune culture"
+                                styleClass="italic-grey" />
+                        </h:panelGroup>
+                    </h:column>
+
+                    <h:column>
+                        <f:facet name="header">
+                            <h:outputText value="Actions" />
+                        </f:facet>
+
+                        <h:button value="Gérer" outcome="formulaire" styleClass="btn">
+                            <f:param name="idParcelle" value="#{parcelle.id}" />
+                        </h:button>
+
+                        <h:commandButton value="Libérer"
+                            action="#{modelParcelle.libererParcelle(parcelle)}"
+                            onclick="return confirm('Voulez-vous libérer cette parcelle ? Cela supprimera votre lien avec celle-ci.')"
+                            styleClass="btn" />
+                    </h:column>
+
+                </h:dataTable>
+
+                <br />
+                
+                <h:button value="Voir les parcelles disponibles"
+                    outcome="disponibles" styleClass="btn" />
+                <h:button value="Retour à l'accueil" outcome="home" styleClass="btn" />
+
+            </h:form>
+        </div>
+    </ui:define>
 </ui:composition>
 </html>

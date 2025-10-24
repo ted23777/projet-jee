@@ -43,4 +43,6 @@ public interface IServiceParcelle {
 
     // Vérifie si une parcelle appartient à un compte donné
     boolean appartientACompte(int idParcelle, int idCompte);
+    
+
 }

@@ -21,6 +21,7 @@ import projet.commun.service.IServiceEntretien;
 import projet.jsf.data.Culture;
 import projet.jsf.data.Entretien;
 import projet.jsf.data.mapper.IMapper;
+import projet.jsf.util.CompteActif;
 import projet.jsf.util.UtilJsf;
 
 @SuppressWarnings("serial")
@@ -39,7 +40,7 @@ public class ModelEntretien implements Serializable {
 	private LocalDate			dateFin;
 	private boolean				filtreActif;
 
-	// Pour gérer les cultures concernées par l'entretien
+	// Pour gï¿½rer les cultures concernï¿½es par l'entretien
 	private List<Culture>		culturesDisponibles;
 	private List<Integer>		culturesConcerneesIds;
 
@@ -51,6 +52,9 @@ public class ModelEntretien implements Serializable {
 
 	@EJB
 	private IServiceConcerner	serviceConcerner;
+	
+	@Inject
+	private CompteActif user;
 
 	@Inject
 	private IMapper				mapper;
@@ -125,11 +129,11 @@ public class ModelEntretien implements Serializable {
 	}
 
 	//------------------
-	// Méthodes internes
+	// Mï¿½thodes internes
 	//------------------
 
 	/**
-	 * Charge la liste selon les critères de recherche et de filtrage.
+	 * Charge la liste selon les critï¿½res de recherche et de filtrage.
 	 */
 	private void chargerListe() {
 		try {
@@ -143,7 +147,7 @@ public class ModelEntretien implements Serializable {
 				dtos = serviceEntretien.listerTout();
 			}
 
-			// Filtrage par période
+			// Filtrage par pï¿½riode
 			if (filtreActif && (dateDebut != null || dateFin != null)) {
 				dtos = dtos.stream()
 					.filter(dto -> {
@@ -184,7 +188,7 @@ public class ModelEntretien implements Serializable {
 	}
 
 	/**
-	 * Charge les cultures concernées par l'entretien courant.
+	 * Charge les cultures concernï¿½es par l'entretien courant.
 	 */
 	private void chargerCulturesConcernees() {
 		if (courant != null && courant.getId() != null) {
@@ -194,7 +198,7 @@ public class ModelEntretien implements Serializable {
 					.map(DtoConcerner::getIdCulture)
 					.collect(Collectors.toList());
 			} catch (Exception e) {
-				UtilJsf.messageError("Erreur lors du chargement des cultures concernées : " + e.getMessage());
+				UtilJsf.messageError("Erreur lors du chargement des cultures concernï¿½es : " + e.getMessage());
 				culturesConcerneesIds = new ArrayList<>();
 			}
 		} else {
@@ -210,7 +214,7 @@ public class ModelEntretien implements Serializable {
 		if (courant != null && courant.getId() != null) {
 			DtoEntretien dto = serviceEntretien.retrouver(courant.getId());
 			if (dto == null) {
-				UtilJsf.messageError("L'entretien demandé n'existe pas.");
+				UtilJsf.messageError("L'entretien demandï¿½ n'existe pas.");
 				return "liste";
 			} else {
 				courant = mapper.map(dto);
@@ -246,19 +250,19 @@ public class ModelEntretien implements Serializable {
 			if (courant.getId() == null) {
 				idEntretien = serviceEntretien.inserer(mapper.map(courant));
 				courant.setId(idEntretien);
-				UtilJsf.messageInfo("Entretien créé avec succès !");
+				UtilJsf.messageInfo("Entretien crï¿½ï¿½ avec succï¿½s !");
 			} else {
 				serviceEntretien.modifier(mapper.map(courant));
 				idEntretien = courant.getId();
-				UtilJsf.messageInfo("Entretien modifié avec succès !");
+				UtilJsf.messageInfo("Entretien modifiï¿½ avec succï¿½s !");
 			}
 
-			// Gestion des cultures concernées
+			// Gestion des cultures concernï¿½es
 			if (culturesConcerneesIds != null) {
 				gererCulturesConcernees(idEntretien);
 			}
 
-			// Invalide le cache local pour refléter les changements
+			// Invalide le cache local pour reflï¿½ter les changements
 			liste = null;
 			return "liste";
 
@@ -272,16 +276,16 @@ public class ModelEntretien implements Serializable {
 	}
 
 	/**
-	 * Gère l'ajout et la suppression des associations culture-entretien.
+	 * Gï¿½re l'ajout et la suppression des associations culture-entretien.
 	 */
 	private void gererCulturesConcernees(int idEntretien) throws ExceptionValidation {
-		// Récupérer les associations existantes
+		// Rï¿½cupï¿½rer les associations existantes
 		List<DtoConcerner> existants = serviceConcerner.listerParIdEntretien(idEntretien);
 		List<Integer> idsExistants = existants.stream()
 			.map(DtoConcerner::getIdCulture)
 			.collect(Collectors.toList());
 
-		// Supprimer les associations qui ne sont plus sélectionnées
+		// Supprimer les associations qui ne sont plus sï¿½lectionnï¿½es
 		for (Integer idExistant : idsExistants) {
 			if (!culturesConcerneesIds.contains(idExistant)) {
 				serviceConcerner.supprimer(idExistant, idEntretien);
@@ -313,7 +317,7 @@ public class ModelEntretien implements Serializable {
 			if (liste != null) {
 				liste.remove(item);
 			}
-			UtilJsf.messageInfo("Entretien supprimé avec succès !");
+			UtilJsf.messageInfo("Entretien supprimï¿½ avec succï¿½s !");
 		} catch (ExceptionValidation e) {
 			UtilJsf.messageError(e.getMessage());
 		} catch (Exception e) {
@@ -335,7 +339,7 @@ public class ModelEntretien implements Serializable {
 	}
 
 	/**
-	 * Réinitialise tous les critères de recherche et de filtrage.
+	 * Rï¿½initialise tous les critï¿½res de recherche et de filtrage.
 	 */
 	public void reinitialiserRecherche() {
 		critereRecherche = null;
@@ -347,7 +351,7 @@ public class ModelEntretien implements Serializable {
 	}
 
 	/**
-	 * Active/désactive le filtre par période.
+	 * Active/dï¿½sactive le filtre par pï¿½riode.
 	 */
 	public void toggleFiltre() {
 		filtreActif = !filtreActif;
@@ -356,7 +360,7 @@ public class ModelEntretien implements Serializable {
 	}
 
 	//-------
-	// Méthodes utilitaires
+	// Mï¿½thodes utilitaires
 	//-------
 
 	/**
@@ -367,14 +371,14 @@ public class ModelEntretien implements Serializable {
 	}
 
 	/**
-	 * Retourne le nombre d'entretiens affichés (après filtrage).
+	 * Retourne le nombre d'entretiens affichï¿½s (aprï¿½s filtrage).
 	 */
 	public int getNombreAffiches() {
 		return getListe().size();
 	}
 
 	/**
-	 * Vérifie si des filtres sont actifs.
+	 * Vï¿½rifie si des filtres sont actifs.
 	 */
 	public boolean hasFiltresActifs() {
 		return (critereRecherche != null && !critereRecherche.trim().isEmpty())
@@ -382,7 +386,7 @@ public class ModelEntretien implements Serializable {
 	}
 
 	/**
-	 * Retourne les cultures concernées par un entretien pour l'affichage.
+	 * Retourne les cultures concernï¿½es par un entretien pour l'affichage.
 	 */
 	public String getCulturesNoms(Entretien entretien) {
 		try {
